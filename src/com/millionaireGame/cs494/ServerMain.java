@@ -4,9 +4,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+import java.util.Iterator;
+import java.util.Set;
 
 public class ServerMain implements Runnable {
     JFrame frame;
@@ -14,6 +20,10 @@ public class ServerMain implements Runnable {
     private JButton buttonSend;
     private JLabel myLabel;
     private JButton buttonDisconnect;
+
+    InetAddress hostAddress;
+    Selector selector;
+    ServerSocketChannel serverSocketChannel;
 
     public ServerMain(JFrame f) {
         myLabel.setText("");
@@ -46,7 +56,48 @@ public class ServerMain implements Runnable {
         frame.setLocation(200, 200);
         frame.pack();
         frame.setVisible(true);
+        try {
+            connectSocket();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    public void connectSocket() throws Exception {
+        hostAddress = InetAddress.getByName("localhost");
+        selector = Selector.open();
+        serverSocketChannel = ServerSocketChannel.open();
 
+        serverSocketChannel.configureBlocking(false); // Non-blocking
+        serverSocketChannel.bind(new InetSocketAddress(hostAddress, 8989));
+        serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+        SelectionKey key;
+        while (true) {
+            if (selector.select() <= 0) continue;
+            Set<SelectionKey> selectedKeys = selector.selectedKeys();
+            Iterator<SelectionKey> iterator = selectedKeys.iterator();
+            while (iterator.hasNext()) {
+                key = iterator.next();
+                iterator.remove();
+                if (key.isAcceptable()) {
+                    SocketChannel socketChannel = serverSocketChannel.accept();
+                    socketChannel.configureBlocking(false);
+                    socketChannel.register(selector, SelectionKey.OP_READ);
+                    System.out.println("Connection Accepted: " + socketChannel.getLocalAddress() + "\n");
+                }
+                if (key.isReadable()) {
+                    SocketChannel socketChannel = (SocketChannel) key.channel();
+                    ByteBuffer bb = ByteBuffer.allocate(1024);
+                    socketChannel.read(bb);
+                    String result = new String(bb.array()).trim();
+                    System.out.println("Message received: " + result + " Message length= " + result.length());
+                    if (result.length() <= 0) {
+                        socketChannel.close();
+                        System.out.println("Connection closed...");
+                        System.out.println("Server will keep running. " + "Try running another client to " + "re-establish connection");
+                    }
+                }
+            }
+        }
+    }
 }
