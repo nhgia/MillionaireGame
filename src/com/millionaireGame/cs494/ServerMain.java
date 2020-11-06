@@ -5,6 +5,7 @@ import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -104,5 +105,11 @@ public class ServerMain implements Runnable {
         }
         display(s);
         tf.setText("");
+    }
+
+    public void actionDisconnectClient(int clientId, Exception e) {
+        display("Id " + clientId + ": " + e.getMessage() + "\nClient ID " + clientId +" - " +
+                "Disconnected" + "!");
+        e.printStackTrace(System.err);
     }
 }

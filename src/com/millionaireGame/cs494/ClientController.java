@@ -11,6 +11,8 @@ public class ClientController implements Runnable {
     private PrintWriter out;
     private final ServerMain serverMain;
 
+    private int clientId;
+
     public ClientController(Socket clientSocket, ServerMain server) throws IOException {
         this.client = clientSocket;
         this.serverMain = server;
@@ -26,8 +28,7 @@ public class ClientController implements Runnable {
                 serverMain.display(in.nextLine());
             }
         } catch (Exception e) {
-            serverMain.display(e.getMessage());
-            e.printStackTrace(System.err);
+            serverMain.actionDisconnectClient(clientId, e);
         }
         finally {
             in.close();
@@ -37,7 +38,14 @@ public class ClientController implements Runnable {
 
     public void actionSendToClient(String str, ActionType action) {
         if (out != null) {
+            getId(str, action);
             out.println(action.toString() + " " + str);
+        }
+    }
+
+    private void getId(String str, ActionType type) {
+        if (type == ActionType.CLID) {
+            clientId = Integer.parseInt(str);
         }
     }
 }
