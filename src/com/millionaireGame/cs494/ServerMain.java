@@ -25,6 +25,8 @@ public class ServerMain implements Runnable {
     private ExecutorService pool = Executors.newFixedThreadPool(4);
     private ArrayList<ClientController> clients = new ArrayList<>();
 
+    public static int numberOfClients = 0;
+
     public ServerMain() {
         textArea.setText("");
         frame.setContentPane(panelMain);
@@ -72,10 +74,13 @@ public class ServerMain implements Runnable {
             ServerSocket ss = new ServerSocket(PORT);
             while (true) {
                 Socket socket = ss.accept();
-                display(socket.getRemoteSocketAddress() + " - Connected");
+                numberOfClients++;
+                display("Client ID " + numberOfClients + " - Connected");
                 ClientController clientThread = new ClientController(socket, this);
                 clients.add(clientThread);
                 pool.execute(clientThread);
+
+                clientThread.actionSendToClient(String.valueOf(numberOfClients), ActionType.CLID);
             }
         } catch (Exception e) {
             display(e.getMessage());
@@ -95,7 +100,7 @@ public class ServerMain implements Runnable {
     public void actionTappedButton() {
         String s = tf.getText();
         for (ClientController client : clients) {
-            client.actionSendToClient(s);
+            client.actionSendToClient(s, ActionType.MESG);
         }
         display(s);
         tf.setText("");

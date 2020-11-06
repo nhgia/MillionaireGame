@@ -10,7 +10,7 @@ import java.net.*;
 import java.util.*;
 
 public class ClientMain implements Runnable {
-    private final JFrame frame = new JFrame("Millionaire - Client");
+    private final JFrame frame = new JFrame("Millionaire - Client | Connecting...");
     private JPanel panelMain;
     private JButton buttonSend;
     private JButton buttonDisconnect;
@@ -22,6 +22,8 @@ public class ClientMain implements Runnable {
     private volatile PrintWriter out;
     private Scanner in;
     private Thread thread;
+
+    public int clientId;
 
     public ClientMain() {
         textArea.setText("");
@@ -71,9 +73,10 @@ public class ClientMain implements Runnable {
             socket = new Socket(SERVER_IP, PORT);
             in = new Scanner(socket.getInputStream());
             out = new PrintWriter(socket.getOutputStream(), true);
-            display("Connected");
+            display("Client connected");
             while (true) {
-                display(in.nextLine());
+                String message = in.nextLine();
+                didReceiveMessageFromServer(message);
             }
         } catch (Exception e) {
             display(e.getMessage());
@@ -94,10 +97,33 @@ public class ClientMain implements Runnable {
         });
     }
 
+    public void didReceiveMessageFromServer(String s) {
+        // Guard non-null value
+        if (s == null) return;
+
+        String message = s;
+        ActionType type = ActionType.valueOf(message.substring(0,4));
+        message = message.substring(5);
+        switch (type) {
+            case MESG:
+                display(type.toString() + ": " + message);
+                break;
+            case CLID:
+                clientId = Integer.parseInt(message);
+                frame.setTitle("Millionaire - Client | ID: " + clientId);
+                display("Your ID is " + clientId);
+                break;
+            case DISS:
+                break;
+            case CONN:
+                break;
+        }
+    }
+
     public void actionTappedButton() {
         String s = tf.getText();
         if (out != null) {
-            out.println(s);
+            out.println("Client " + clientId + " said: " + s);
         }
         display(s);
         tf.setText("");

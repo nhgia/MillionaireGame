@@ -1,9 +1,7 @@
 package com.millionaireGame.cs494;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -37,9 +35,9 @@ public class ClientController implements Runnable {
         }
     }
 
-    public void actionSendToClient(String str) {
+    public void actionSendToClient(String str, ActionType action) {
         if (out != null) {
-            out.println("Server: " + str);
+            out.println(action.toString() + " " + str);
         }
     }
 }
