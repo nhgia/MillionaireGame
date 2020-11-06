@@ -1,37 +1,46 @@
 package com.millionaireGame.cs494;
 
 import javax.swing.*;
+import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
-import java.util.Iterator;
-import java.util.Set;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Scanner;
 
 public class ServerMain implements Runnable {
-    JFrame frame;
+    private final JFrame frame = new JFrame("Millionaire - Server");
     private JPanel panelMain;
     private JButton buttonSend;
-    private JLabel myLabel;
     private JButton buttonDisconnect;
+    private JTextArea textArea;
+    private JTextField tf;
 
-    InetAddress hostAddress;
-    Selector selector;
-    ServerSocketChannel serverSocketChannel;
+    private static final String SERVER_IP = "127.0.0.1";
+    private static final int PORT = 8989;
+    private volatile PrintWriter out;
+    private Scanner in;
+    private Thread thread;
 
-    public ServerMain(JFrame f) {
-        myLabel.setText("");
-        this.frame = f;
+    public ServerMain() {
+        textArea.setText("");
+        frame.setContentPane(panelMain);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setPreferredSize(new Dimension(800, 450));
+        frame.setLocation(200, 200);
+        frame.pack();
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        DefaultCaret caret = (DefaultCaret) textArea.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+        display(SERVER_IP + " on port " + PORT);
+        thread = new Thread(this, "Awaiting");
         buttonSend.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                actionTappedButton();
             }
         });
         buttonDisconnect.addActionListener(new ActionListener() {
@@ -43,61 +52,56 @@ public class ServerMain implements Runnable {
     }
 
     public static void main(String[] args) {
-        JFrame sFrame = new JFrame("Millionaire - Server");
-        Thread sThread = new Thread(new ServerMain(sFrame));
-        sThread.start();
+        EventQueue.invokeLater(new Runnable() {
+            //@Override
+            public void run() {
+                new ServerMain().start();
+            }
+        });
+    }
+
+    public void start() {
+        frame.setVisible(true);
+        thread.start();
     }
 
     @Override
     public void run() {
-        frame.setContentPane(panelMain);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(800, 450));
-        frame.setLocation(200, 200);
-        frame.pack();
-        frame.setVisible(true);
         try {
-            connectSocket();
+            Socket socket;
+            ServerSocket ss = new ServerSocket(PORT);
+            socket = ss.accept();
+            in = new Scanner(socket.getInputStream());
+            out = new PrintWriter(socket.getOutputStream(), true);
+            display("Connected");
+            while (true) {
+                display(in.nextLine());
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            display(e.getMessage());
+            e.printStackTrace(System.err);
+        }
+        finally {
+            in.close();
+            out.close();
         }
     }
 
-    public void connectSocket() throws Exception {
-        hostAddress = InetAddress.getByName("localhost");
-        selector = Selector.open();
-        serverSocketChannel = ServerSocketChannel.open();
-
-        serverSocketChannel.configureBlocking(false); // Non-blocking
-        serverSocketChannel.bind(new InetSocketAddress(hostAddress, 8989));
-        serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-        SelectionKey key;
-        while (true) {
-            if (selector.select() <= 0) continue;
-            Set<SelectionKey> selectedKeys = selector.selectedKeys();
-            Iterator<SelectionKey> iterator = selectedKeys.iterator();
-            while (iterator.hasNext()) {
-                key = iterator.next();
-                iterator.remove();
-                if (key.isAcceptable()) {
-                    SocketChannel socketChannel = serverSocketChannel.accept();
-                    socketChannel.configureBlocking(false);
-                    socketChannel.register(selector, SelectionKey.OP_READ);
-                    System.out.println("Connection Accepted: " + socketChannel.getLocalAddress() + "\n");
-                }
-                if (key.isReadable()) {
-                    SocketChannel socketChannel = (SocketChannel) key.channel();
-                    ByteBuffer bb = ByteBuffer.allocate(1024);
-                    socketChannel.read(bb);
-                    String result = new String(bb.array()).trim();
-                    System.out.println("Message received: " + result + " Message length= " + result.length());
-                    if (result.length() <= 0) {
-                        socketChannel.close();
-                        System.out.println("Connection closed...");
-                        System.out.println("Server will keep running. " + "Try running another client to " + "re-establish connection");
-                    }
-                }
+    private void display(final String s) {
+        EventQueue.invokeLater(new Runnable() {
+            //@Override
+            public void run() {
+                textArea.append(s + "\n");
             }
+        });
+    }
+
+    public void actionTappedButton() {
+        String s = tf.getText();
+        if (out != null) {
+            out.println(s);
         }
+        display(s);
+        tf.setText("");
     }
 }

@@ -14,15 +14,6 @@ public class Main {
     ClientMain client;
 
     public Main() {
-        JFrame sFrame = new JFrame("Millionaire - Server");
-        server = new ServerMain(sFrame);
-        Thread sThread = new Thread(server);
-        sThread.start();
-
-        JFrame cFrame = new JFrame("Millionaire - Client");
-        client = new ClientMain(cFrame);
-        Thread cThread = new Thread(client);
-        cThread.start();
     }
 
     public static void main(String[] args) {
