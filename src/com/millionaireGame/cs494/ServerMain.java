@@ -5,10 +5,10 @@ import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.concurrent.*;
 
 public class ServerMain implements Runnable {
     private final JFrame frame = new JFrame("Millionaire - Server");
@@ -20,9 +20,10 @@ public class ServerMain implements Runnable {
 
     private static final String SERVER_IP = "127.0.0.1";
     private static final int PORT = 8989;
-    private volatile PrintWriter out;
-    private Scanner in;
     private Thread thread;
+
+    private ExecutorService pool = Executors.newFixedThreadPool(4);
+    private ArrayList<ClientController> clients = new ArrayList<>();
 
     public ServerMain() {
         textArea.setText("");
@@ -68,26 +69,21 @@ public class ServerMain implements Runnable {
     @Override
     public void run() {
         try {
-            Socket socket;
             ServerSocket ss = new ServerSocket(PORT);
-            socket = ss.accept();
-            in = new Scanner(socket.getInputStream());
-            out = new PrintWriter(socket.getOutputStream(), true);
-            display("Connected");
             while (true) {
-                display(in.nextLine());
+                Socket socket = ss.accept();
+                display(socket.getRemoteSocketAddress() + " - Connected");
+                ClientController clientThread = new ClientController(socket, this);
+                clients.add(clientThread);
+                pool.execute(clientThread);
             }
         } catch (Exception e) {
             display(e.getMessage());
             e.printStackTrace(System.err);
         }
-        finally {
-            in.close();
-            out.close();
-        }
     }
 
-    private void display(final String s) {
+     void display(final String s) {
         EventQueue.invokeLater(new Runnable() {
             //@Override
             public void run() {
@@ -98,8 +94,8 @@ public class ServerMain implements Runnable {
 
     public void actionTappedButton() {
         String s = tf.getText();
-        if (out != null) {
-            out.println(s);
+        for (ClientController client : clients) {
+            client.actionSendToClient(s);
         }
         display(s);
         tf.setText("");

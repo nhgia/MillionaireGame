@@ -5,11 +5,8 @@ import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.*;
-import java.nio.ByteBuffer;
-import java.nio.channels.*;
 import java.util.*;
 
 public class ClientMain implements Runnable {
@@ -88,7 +85,7 @@ public class ClientMain implements Runnable {
         }
     }
 
-    private void display(final String s) {
+    void display(final String s) {
         EventQueue.invokeLater(new Runnable() {
             //@Override
             public void run() {
