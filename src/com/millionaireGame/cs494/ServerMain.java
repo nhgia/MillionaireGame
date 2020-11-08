@@ -5,7 +5,9 @@ import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -19,6 +21,9 @@ public class ServerMain implements Runnable {
     private JTextArea textArea;
     private JTextField tf;
 
+    File font_file = new File("fonts/BebasNeue-Regular.ttf");
+    Font font = Font.createFont(Font.TRUETYPE_FONT, font_file);
+
     private static final String SERVER_IP = "127.0.0.1";
     private static final int PORT = 8989;
     private Thread thread;
@@ -28,8 +33,9 @@ public class ServerMain implements Runnable {
 
     public static int numberOfClients = 0;
 
-    public ServerMain() {
+    public ServerMain() throws IOException, FontFormatException {
         textArea.setText("");
+        textArea.setFont(font.deriveFont(24f));
         frame.setContentPane(panelMain);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setPreferredSize(new Dimension(800, 450));
@@ -41,12 +47,14 @@ public class ServerMain implements Runnable {
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         display(SERVER_IP + " on port " + PORT);
         thread = new Thread(this, "Awaiting");
+        buttonSend.setFont(font.deriveFont(24f));
         buttonSend.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 actionTappedButton();
             }
         });
+        buttonDisconnect.setFont(font.deriveFont(24f));
         buttonDisconnect.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -59,7 +67,13 @@ public class ServerMain implements Runnable {
         EventQueue.invokeLater(new Runnable() {
             //@Override
             public void run() {
-                new ServerMain().start();
+                try {
+                    new ServerMain().start();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (FontFormatException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -71,6 +85,7 @@ public class ServerMain implements Runnable {
 
     @Override
     public void run() {
+
         try {
             ServerSocket ss = new ServerSocket(PORT);
             while (true) {
