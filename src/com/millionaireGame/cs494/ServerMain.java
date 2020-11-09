@@ -1,32 +1,20 @@
 package com.millionaireGame.cs494;
 
-import javax.swing.*;
-import javax.swing.text.DefaultCaret;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.*;
 
 public class ServerMain implements Runnable {
-    private final JFrame frame = new JFrame("Millionaire - Server");
-    private JPanel panelMain;
-    private JButton buttonSend;
-    private JButton buttonDisconnect;
-    private JTextArea textArea;
-    private JTextField tf;
-
-    File font_file = new File("fonts/BebasNeue-Regular.ttf");
-    Font font = Font.createFont(Font.TRUETYPE_FONT, font_file);
-
     private static final String SERVER_IP = "127.0.0.1";
     private static final int PORT = 8989;
     private Thread thread;
+
+    private ServerGUI frontend;
+    private Thread frontendThread;
+    public MessageToSend actionSendMessage;
 
     private ExecutorService pool = Executors.newFixedThreadPool(4);
     private ArrayList<ClientController> clients = new ArrayList<>();
@@ -34,33 +22,10 @@ public class ServerMain implements Runnable {
     public static int numberOfClients = 0;
 
     public ServerMain() throws IOException, FontFormatException {
-        textArea.setText("");
-        textArea.setFont(font.deriveFont(24f));
-        frame.setContentPane(panelMain);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(800, 450));
-        frame.setLocation(200, 200);
-        frame.pack();
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
-        DefaultCaret caret = (DefaultCaret) textArea.getCaret();
-        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-        display(SERVER_IP + " on port " + PORT);
+        actionSendMessage = this::actionSendMessageToClients;
+        frontend = new ServerGUI(actionSendMessage);
+        frontendThread = new Thread(frontend);
         thread = new Thread(this, "Awaiting");
-        buttonSend.setFont(font.deriveFont(24f));
-        buttonSend.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                actionTappedButton();
-            }
-        });
-        buttonDisconnect.setFont(font.deriveFont(24f));
-        buttonDisconnect.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
     }
 
     public static void main(String[] args) {
@@ -79,19 +44,19 @@ public class ServerMain implements Runnable {
     }
 
     public void start() {
-        frame.setVisible(true);
         thread.start();
+        frontendThread.start();
     }
 
     @Override
     public void run() {
-
         try {
             ServerSocket ss = new ServerSocket(PORT);
+            frontend.display(ActionType.CONN,SERVER_IP + ":" + PORT);
             while (true) {
                 Socket socket = ss.accept();
                 numberOfClients++;
-                display("Client ID " + numberOfClients + " - Connected");
+                frontend.display(ActionType.CLCN, "Client ID " + numberOfClients + " - Connected");
                 ClientController clientThread = new ClientController(socket, this);
                 clients.add(clientThread);
                 pool.execute(clientThread);
@@ -99,32 +64,46 @@ public class ServerMain implements Runnable {
                 clientThread.actionSendToClient(String.valueOf(numberOfClients), ActionType.CLID);
             }
         } catch (Exception e) {
-            display(e.getMessage());
+            frontend.display(ActionType.ERRO, e.getMessage());
             e.printStackTrace(System.err);
         }
     }
 
-     void display(final String s) {
-        EventQueue.invokeLater(new Runnable() {
-            //@Override
-            public void run() {
-                textArea.append(s + "\n");
-            }
-        });
+    public void actionDisconnectClient(int clientId, Exception e) {
+        frontend.display(ActionType.MESG,"Id " + clientId + ": " + e.getMessage() + "\nClient ID " + clientId +" - " +
+                "Disconnected" + "!");
+        e.printStackTrace(System.err);
     }
 
-    public void actionTappedButton() {
-        String s = tf.getText();
+    void actionSendMessageToClients(String s) {
         for (ClientController client : clients) {
             client.actionSendToClient(s, ActionType.MESG);
         }
-        display(s);
-        tf.setText("");
+        frontend.display(ActionType.MESG, s);
     }
 
-    public void actionDisconnectClient(int clientId, Exception e) {
-        display("Id " + clientId + ": " + e.getMessage() + "\nClient ID " + clientId +" - " +
-                "Disconnected" + "!");
-        e.printStackTrace(System.err);
+    void didReceiveMessage(String s) {
+        // Guard
+        if (s == null) return;
+        // Parse message
+        String message = s;
+        ActionType type = ActionType.valueOf(message.substring(0,4));
+        message = message.substring(5);
+        frontend.display(type, message);
+//        switch (type) {
+//            case MESG:
+//                frontend.display(type.toString() + ": " + message);
+//                break;
+//            case CLID:
+//                clientId = Integer.parseInt(message);
+//                frame.setTitle("Millionaire - Client | ID: " + clientId);
+//                display("Your ID is " + clientId);
+//                break;
+//            case DISS:
+//                break;
+//            case CONN:
+//                break;
+//        }
+
     }
 }

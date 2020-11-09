@@ -5,7 +5,9 @@ public enum ActionType {
     MESG("MESG"),
     CLID("CLID"),
     DISS("DISS"),
-    CONN("CONN");
+    CONN("CONN"),
+    CLCN("CLCN"),
+    ERRO("ERRO");
 
     private String type;
 

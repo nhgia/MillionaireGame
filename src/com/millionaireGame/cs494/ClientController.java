@@ -25,7 +25,7 @@ public class ClientController implements Runnable {
     public void run() {
         try {
             while (true) {
-                serverMain.display(in.nextLine());
+                serverMain.didReceiveMessage(in.nextLine());
             }
         } catch (Exception e) {
             serverMain.actionDisconnectClient(clientId, e);
