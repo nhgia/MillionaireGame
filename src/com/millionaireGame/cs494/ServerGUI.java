@@ -19,13 +19,18 @@ public class ServerGUI implements Runnable {
     private final JFrame frame = new JFrame("Millionaire - Server");
     private ImagePanel panelMain;
     private JButton buttonSend = new JButton("Send");
-    private JButton buttonDisconnect = new JButton("Disconnect");
+
     private JButton buttonStart = new JButton("  START GAME  ");
     private JButton buttonConnectDb = new JButton("Connect");
     private JComboBox questionSetsList = new JComboBox();
+    private JComboBox modeList = new JComboBox();
+    private JComboBox answerTimeList = new JComboBox();
     private JTextArea textArea = new JTextArea();
     private JTextField textField = new JTextField();
     private JLabel labelSocketServer = new JLabel("Not connected", SwingConstants.CENTER);
+    private JCheckBox checkBox = new JCheckBox();
+    private JButton buttonReset = new JButton("Reset settings");
+    private JButton buttonDisconnect = new JButton("Disconnect");
 
     File font_file = new File("fonts/BebasNeue-Regular.ttf");
     Font font = Font.createFont(Font.TRUETYPE_FONT, font_file);
@@ -33,6 +38,8 @@ public class ServerGUI implements Runnable {
     public MessageToSend actionSendMessage;
 
     public String[] qSets = {"Set #100-299", "Set #200-399"};
+    public String[] modeSets = {"Battle-royale", "Lightning"};
+    public String[] timeSets = {"10 seconds", "20 seconds", "30 seconds"};
 
     public ServerGUI(MessageToSend closure) throws IOException, FontFormatException {
         this.actionSendMessage = closure;
@@ -67,7 +74,7 @@ public class ServerGUI implements Runnable {
         panelMain.add(navPanel, BorderLayout.PAGE_START);
 
         final JPanel navPanelContent = new JPanel(new GridLayout(1, 2, 32, 0));
-        final JPanel navPanelSettings = new JPanel(new GridLayout(3, 2, 12, 10));
+        final JPanel navPanelSettings = new JPanel(new GridLayout(7, 2, 22, 10));
         final JPanel navPanelPlayers = new JPanel(new BorderLayout());
         navPanelContent.setOpaque(false);
         navPanelContent.setBorder(new EmptyBorder(0,20,20,20));
@@ -93,7 +100,6 @@ public class ServerGUI implements Runnable {
         buttonConnectDb.setFont(font.deriveFont(30f));
         buttonConnectDb.setBackground(Color.white);
         navPanelSettings.add(buttonConnectDb);
-
         final JLabel labelQuestionSet = new JLabel("Question set:", SwingConstants.RIGHT);
         labelQuestionSet.setFont(font.deriveFont(30f));
         labelQuestionSet.setForeground(Color.white);
@@ -103,6 +109,33 @@ public class ServerGUI implements Runnable {
         }
         questionSetsList.setFont(font.deriveFont(18f));
         navPanelSettings.add(questionSetsList);
+        final JLabel labelShuffle = new JLabel("Shufle:", SwingConstants.RIGHT);
+        labelShuffle.setFont(font.deriveFont(30f));
+        labelShuffle.setForeground(Color.white);
+        navPanelSettings.add(labelShuffle);
+        navPanelSettings.add(checkBox);
+        final JLabel labelMode = new JLabel("Mode:", SwingConstants.RIGHT);
+        labelMode.setFont(font.deriveFont(30f));
+        labelMode.setForeground(Color.white);
+        navPanelSettings.add(labelMode);
+        for (String mSet : modeSets) {
+            modeList.addItem(mSet);
+        }
+        modeList.setFont(font.deriveFont(18f));
+        navPanelSettings.add(modeList);
+        final JLabel labelTime = new JLabel("Answer time:", SwingConstants.RIGHT);
+        labelTime.setFont(font.deriveFont(30f));
+        labelTime.setForeground(Color.white);
+        navPanelSettings.add(labelTime);
+        for (String tSet : timeSets) {
+            answerTimeList.addItem(tSet);
+        }
+        answerTimeList.setFont(font.deriveFont(18f));
+        navPanelSettings.add(answerTimeList);
+        buttonDisconnect.setFont(font.deriveFont(24f));
+        buttonReset.setFont(font.deriveFont(24f));
+        navPanelSettings.add(buttonReset);
+        navPanelSettings.add(buttonDisconnect);
 
         //Right: Players
         final JLabel labelPlayersConnected = new JLabel("Players connected:");
