@@ -5,28 +5,29 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultCaret;
+import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 
 public class ClientGUI implements Runnable{
     public final JFrame frame = new JFrame("Millionaire - Client | Connecting...");
     private ImagePanel panelMain;
-    private JButton buttonSend = new JButton("Send");
+    private JButton buttonSend = new JButton("Connect");
     private JButton buttonDisconnect = new JButton("Disconnect");
     private JTextArea textArea = new JTextArea();
-    private JTextField tf = new JTextField();
+    private JFormattedTextField tf = new JFormattedTextField(new MaskFormatter("AAAAAAAAAA"));
     private JLabel labelEnterName = new JLabel("Please enter your name");
-    private JLabel labelName = new JLabel("");
 
     File font_file = new File("fonts/BebasNeue-Regular.ttf");
     Font font = Font.createFont(Font.TRUETYPE_FONT, font_file);
 
     public MessageToSend actionSendMessage;
 
-    public ClientGUI(MessageToSend closure) throws IOException, FontFormatException{
+    public ClientGUI(MessageToSend closure) throws IOException, FontFormatException, ParseException {
         this.actionSendMessage = closure;
         setupView();
     }
@@ -34,7 +35,9 @@ public class ClientGUI implements Runnable{
     private void setupView() throws IOException {
         BufferedImage myImage = ImageIO.read(new File("resource/background_setup.png"));
         panelMain = new ImagePanel(myImage);
-        panelMain.setLayout(new GridLayout(2,1));
+        panelMain.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.VERTICAL;
         frame.setContentPane(panelMain);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         final Dimension dimen = new Dimension(960, 540);
@@ -52,14 +55,40 @@ public class ClientGUI implements Runnable{
         });
         labelEnterName.setFont(font.deriveFont(36f));
         labelEnterName.setForeground(Color.white);
+        tf.setText("");
         tf.setOpaque(false);
         tf.setBackground(new Color(255, 255, 255, 0));
         tf.setForeground(Color.white);
         tf.setFont(font.deriveFont(48f));
         tf.setHorizontalAlignment(JTextField.CENTER);
-        panelMain.add(labelEnterName);
-        panelMain.add(tf);
-
+        tf.setBorder(BorderFactory.createLineBorder(Color.white, 6));
+//        tf.getDocument().addDocumentListener(new DocumentListener() {
+//            public void changedUpdate(DocumentEvent e) {
+//                warn();
+//            }
+//            public void removeUpdate(DocumentEvent e) {
+//                warn();
+//            }
+//            public void insertUpdate(DocumentEvent e) {
+//                warn();
+//            }
+//            public void warn() {
+//                buttonSend.setText("Connect");
+//                buttonSend.setForeground(Color.black);
+//            }
+//        });
+        buttonSend.setFont(font.deriveFont(36f));
+        gbc.gridy = 0;
+        panelMain.add(labelEnterName, gbc);
+        gbc.gridy = 1;
+        gbc.ipady = 20;
+        gbc.ipadx = 640;
+        panelMain.add(tf, gbc);
+        gbc.gridy = 4;
+        gbc.ipady = 0;
+        gbc.ipadx = 0;
+        gbc.insets = new Insets(24,0,0,0);
+        panelMain.add(buttonSend, gbc);
         textArea.setText("");
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
@@ -84,14 +113,18 @@ public class ClientGUI implements Runnable{
         frame.setVisible(true);
     }
 
-    public void display(final String s) {
+    public void display(final ActionType type, final String s) {
         textArea.append(s + "\n");
+        if (type == ActionType.ERRO) {
+            buttonSend.setText(s);
+            buttonSend.setForeground(Color.red);
+        }
     }
 
     public void actionTappedButton() {
         String s = tf.getText();
-        actionSendMessage.mess(s);
-        display(s);
+        actionSendMessage.mess(ActionType.MESG, s);
+        display(ActionType.MESG, s);
         tf.setText("");
     }
 }

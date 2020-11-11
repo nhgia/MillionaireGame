@@ -36,7 +36,7 @@ public class ClientController implements Runnable {
         }
     }
 
-    public void actionSendToClient(String str, ActionType action) {
+    public void actionSendToClient(ActionType action, String str) {
         if (out != null) {
             getId(str, action);
             out.println(action.toString() + " " + str);

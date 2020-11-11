@@ -12,7 +12,7 @@ import java.io.File;
 import java.io.IOException;
 
 interface MessageToSend {
-    void mess(String s);
+    void mess(ActionType type, String s);
 }
 
 public class ServerGUI implements Runnable {
@@ -173,7 +173,7 @@ public class ServerGUI implements Runnable {
 
     public void actionTappedButton() {
         String myString = textField.getText();
-        actionSendMessage.mess(myString);
+        actionSendMessage.mess(ActionType.MESG, myString);
     }
 
     public void display(final ActionType type,final String mess) {
@@ -182,6 +182,7 @@ public class ServerGUI implements Runnable {
             labelSocketServer.setForeground(new Color(0, 255, 71));
         }
         textArea.append(mess + "\n");
+        textArea.setCaretPosition(textArea.getDocument().getLength());
     }
 
     @Override

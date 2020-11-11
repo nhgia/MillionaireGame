@@ -61,7 +61,7 @@ public class ServerMain implements Runnable {
                 clients.add(clientThread);
                 pool.execute(clientThread);
 
-                clientThread.actionSendToClient(String.valueOf(numberOfClients), ActionType.CLID);
+                clientThread.actionSendToClient(ActionType.CLID, String.valueOf(numberOfClients));
             }
         } catch (Exception e) {
             frontend.display(ActionType.ERRO, e.getMessage());
@@ -75,9 +75,9 @@ public class ServerMain implements Runnable {
         e.printStackTrace(System.err);
     }
 
-    void actionSendMessageToClients(String s) {
+    void actionSendMessageToClients(ActionType type, String s) {
         for (ClientController client : clients) {
-            client.actionSendToClient(s, ActionType.MESG);
+            client.actionSendToClient(type, s);
         }
         frontend.display(ActionType.MESG, s);
     }

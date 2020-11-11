@@ -4,6 +4,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.*;
+import java.text.ParseException;
 import java.util.*;
 
 public class ClientMain implements Runnable {
@@ -19,7 +20,7 @@ public class ClientMain implements Runnable {
     private Thread frontendThread;
     public MessageToSend actionSendMessage;
 
-    public ClientMain() throws IOException, FontFormatException {
+    public ClientMain() throws IOException, FontFormatException, ParseException {
 //        display(SERVER_IP + " on port " + PORT);
         thread = new Thread(this, "Trying");
         actionSendMessage = this::actionSendMessageToServer;
@@ -27,7 +28,7 @@ public class ClientMain implements Runnable {
         frontendThread = new Thread(frontend);
     }
 
-    public static void main(String[] args) throws IOException, FontFormatException {
+    public static void main(String[] args) throws IOException, FontFormatException, ParseException {
         new ClientMain().start();
     }
 
@@ -43,18 +44,18 @@ public class ClientMain implements Runnable {
             socket = new Socket(SERVER_IP, PORT);
             in = new Scanner(socket.getInputStream());
             out = new PrintWriter(socket.getOutputStream(), true);
-            frontend.display("Client connected");
+            frontend.display(ActionType.CONN,"Client connected");
             while (true) {
                 String message = in.nextLine();
                 didReceiveMessageFromServer(message);
             }
         } catch (Exception e) {
-            frontend.display(e.getMessage());
+            frontend.display(ActionType.ERRO, e.getMessage());
             e.printStackTrace(System.err);
         }
         finally {
-            in.close();
-            out.close();
+            if (in != null) in.close();
+            if (out != null) out.close();
         }
     }
 
@@ -67,12 +68,12 @@ public class ClientMain implements Runnable {
         message = message.substring(5);
         switch (type) {
             case MESG:
-                frontend.display(type.toString() + ": " + message);
+                frontend.display(type, message);
                 break;
             case CLID:
                 clientId = Integer.parseInt(message);
                 frontend.frame.setTitle("Millionaire - Client | ID: " + clientId);
-                frontend.display("Your ID is " + clientId);
+                frontend.display(type, "Your ID is " + clientId);
                 break;
             case DISS:
                 break;
@@ -81,9 +82,9 @@ public class ClientMain implements Runnable {
         }
     }
 
-    public void actionSendMessageToServer(String s) {
+    public void actionSendMessageToServer(ActionType type, String s) {
         if (out != null) {
-            out.println(ActionType.MESG.toString() + " Client " + clientId + " said: " + s);
+            out.println(type.toString() + " Client " + clientId + " said: " + s);
         }
     }
 }
