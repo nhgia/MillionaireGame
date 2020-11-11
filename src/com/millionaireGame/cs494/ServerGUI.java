@@ -25,6 +25,7 @@ public class ServerGUI implements Runnable {
     private JComboBox questionSetsList = new JComboBox();
     private JComboBox modeList = new JComboBox();
     private JComboBox answerTimeList = new JComboBox();
+    private JScrollPane scrollPane;
     private JTextArea textArea = new JTextArea();
     private JTextField textField = new JTextField();
     private JLabel labelSocketServer = new JLabel("Not connected", SwingConstants.CENTER);
@@ -153,7 +154,9 @@ public class ServerGUI implements Runnable {
         textArea.setEditable(false);
         DefaultCaret caret = (DefaultCaret) textArea.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-        navPanelPlayers.add(textArea, BorderLayout.CENTER);
+        scrollPane = new JScrollPane(textArea);
+        scrollPane.setOpaque(false);
+        navPanelPlayers.add(scrollPane, BorderLayout.CENTER);
 
         buttonSend.setFont(font.deriveFont(24f));
         buttonSend.addActionListener(new ActionListener() {
