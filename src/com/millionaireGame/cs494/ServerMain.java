@@ -1,9 +1,14 @@
 package com.millionaireGame.cs494;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.awt.*;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.concurrent.*;
 
@@ -105,5 +110,20 @@ public class ServerMain implements Runnable {
 //                break;
 //        }
 
+    }
+    public void ReadJSonFile() throws IOException, FontFormatException {
+        String data = ".\\resource\\data.json";
+        try{
+            String content = new String((Files.readAllBytes(Paths.get(data))));
+            JSONObject obj = new JSONObject(content);
+            JSONArray question = obj.getJSONArray("question");
+            JSONArray answerA = obj.getJSONArray("A");
+            JSONArray answerB = obj.getJSONArray("B");
+            JSONArray answerC = obj.getJSONArray("C");
+            JSONArray answerD = obj.getJSONArray("D");
+            JSONArray answer = obj.getJSONArray("answer");
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 }
