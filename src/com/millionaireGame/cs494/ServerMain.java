@@ -1,7 +1,6 @@
 package com.millionaireGame.cs494;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.awt.*;
 import java.io.IOException;
@@ -10,6 +9,9 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.*;
 
 public class ServerMain implements Runnable {
@@ -116,5 +118,18 @@ public class ServerMain implements Runnable {
 //                break;
 //        }
 
+    }
+    public List<Object> getRandomElement(JSONArray originArray, int totalQuestion){
+//        ArrayList<JSONObject> a = new ArrayList<>();
+        Random rand = new Random();
+        List<Object> setQuestion = new ArrayList<>();
+//        for(int i = 0; i < totalQuestion; i++){
+//            int randomIndex = rand.nextInt((originArray.length()));
+//            setQuestion.add((JSONObject) originArray.get(randomIndex));
+//            originArray.remove(randomIndex);
+//        }
+        setQuestion = originArray.toList();
+        Collections.shuffle(setQuestion);
+        return setQuestion.subList(0, totalQuestion);
     }
 }

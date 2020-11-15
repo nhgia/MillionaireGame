@@ -143,10 +143,9 @@ public class ServerGUI implements Runnable {
         labelPlayersConnected.setFont(font.deriveFont(30f));
         labelPlayersConnected.setForeground(Color.white);
         navPanelPlayers.add(labelPlayersConnected, BorderLayout.PAGE_START);
-        textArea.setOpaque(true);
-        textArea.setBackground(new Color(250, 248, 248, 50));
+        textArea.setOpaque(false);
         textArea.setText("");
-        textArea.setForeground(Color.white);
+        textArea.setForeground(Color.black);
         textArea.setFont(font.deriveFont(32f));
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
@@ -167,6 +166,12 @@ public class ServerGUI implements Runnable {
         });
         buttonDisconnect.setFont(font.deriveFont(24f));
         buttonDisconnect.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+        buttonConnectDb.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
