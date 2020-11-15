@@ -26,7 +26,7 @@ public class ServerMain implements Runnable {
 
     public static int numberOfClients = 0;
 
-    private String dataJSON = new String((Files.readAllBytes(Paths.get(".\\resource\\data.json"))));
+    private String dataJSON = new String((Files.readAllBytes(Paths.get("resource/data.json"))));
     private JSONArray questions;
 
     public ServerMain() throws IOException, FontFormatException {

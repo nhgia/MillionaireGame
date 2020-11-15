@@ -2,32 +2,30 @@ package com.millionaireGame.cs494;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultCaret;
-import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 
 public class ClientGUI implements Runnable{
     public final JFrame frame = new JFrame("Millionaire - Client | Connecting...");
     private ImagePanel panelMain;
-    private JButton buttonSend = new JButton("Connect");
+    private JButton buttonName = new JButton("Connect");
     private JButton buttonDisconnect = new JButton("Disconnect");
-    private JTextArea textArea = new JTextArea();
-    private JFormattedTextField tf = new JFormattedTextField(new MaskFormatter("AAAAAAAAAA"));
+    private JTextField tf = new JTextField();
     private JLabel labelEnterName = new JLabel("Please enter your name");
+
+    private ImagePanel panelPlay;
+    private JTextArea textArea = new JTextArea();
 
     File font_file = new File("fonts/BebasNeue-Regular.ttf");
     Font font = Font.createFont(Font.TRUETYPE_FONT, font_file);
 
     public MessageToSend actionSendMessage;
 
-    public ClientGUI(MessageToSend closure) throws IOException, FontFormatException, ParseException {
+    public ClientGUI(MessageToSend closure) throws IOException, FontFormatException {
         this.actionSendMessage = closure;
         setupView();
     }
@@ -62,22 +60,26 @@ public class ClientGUI implements Runnable{
         tf.setFont(font.deriveFont(48f));
         tf.setHorizontalAlignment(JTextField.CENTER);
         tf.setBorder(BorderFactory.createLineBorder(Color.white, 6));
-//        tf.getDocument().addDocumentListener(new DocumentListener() {
-//            public void changedUpdate(DocumentEvent e) {
-//                warn();
-//            }
-//            public void removeUpdate(DocumentEvent e) {
-//                warn();
-//            }
-//            public void insertUpdate(DocumentEvent e) {
-//                warn();
-//            }
-//            public void warn() {
-//                buttonSend.setText("Connect");
-//                buttonSend.setForeground(Color.black);
-//            }
-//        });
-        buttonSend.setFont(font.deriveFont(36f));
+        tf.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (tf.getText().length() >= 10) {
+                    e.consume();
+                    return;
+                };
+                char c = e.getKeyChar();
+                if (!Character.isLetterOrDigit(c) && c != '_') e.consume();
+            }
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+            }
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+        });
+        buttonName.setFont(font.deriveFont(36f));
         gbc.gridy = 0;
         panelMain.add(labelEnterName, gbc);
         gbc.gridy = 1;
@@ -88,13 +90,19 @@ public class ClientGUI implements Runnable{
         gbc.ipady = 0;
         gbc.ipadx = 0;
         gbc.insets = new Insets(24,0,0,0);
-        panelMain.add(buttonSend, gbc);
+        panelMain.add(buttonName, gbc);
+        textArea.setOpaque(true);
+        textArea.setBackground(Color.CYAN);
+        textArea.setFont(font.deriveFont(56f));
         textArea.setText("");
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
+        panelPlay = new ImagePanel(myImage);
+        panelPlay.setLayout(new BorderLayout());
         DefaultCaret caret = (DefaultCaret) textArea.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-        buttonSend.addActionListener(new ActionListener() {
+        panelPlay.add(textArea, BorderLayout.CENTER);
+        buttonName.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 actionTappedButton();
@@ -114,17 +122,20 @@ public class ClientGUI implements Runnable{
     }
 
     public void display(final ActionType type, final String s) {
-        textArea.append(s + "\n");
+        textArea.append(type + " " + s + "\n");
+        System.out.println(type + " " + s + "\n");
         if (type == ActionType.ERRO) {
-            buttonSend.setText(s);
-            buttonSend.setForeground(Color.red);
+            buttonName.setText(s);
+            buttonName.setEnabled(false);
         }
     }
 
     public void actionTappedButton() {
         String s = tf.getText();
-        actionSendMessage.mess(ActionType.MESG, s);
-        display(ActionType.MESG, s);
+        actionSendMessage.mess(ActionType.NAME, s);
+        display(ActionType.NAME, s);
         tf.setText("");
+        frame.setTitle("START GAME");
+        frame.setContentPane(panelPlay);
     }
 }

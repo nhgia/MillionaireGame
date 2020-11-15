@@ -84,7 +84,7 @@ public class ClientMain implements Runnable {
 
     public void actionSendMessageToServer(ActionType type, String s) {
         if (out != null) {
-            out.println(type.toString() + " Client " + clientId + " said: " + s);
+            out.println(type.toString() + " " + s);
         }
     }
 }

@@ -38,7 +38,7 @@ public class ServerGUI implements Runnable {
 
     public MessageToSend actionSendMessage;
 
-    public String[] qSets = {"Set #100-299", "Set #200-399"};
+    public String[] qSets = {"5", "10", "15", "20", "30"};
     public String[] modeSets = {"Battle-royale", "Lightning"};
     public String[] timeSets = {"10 seconds", "20 seconds", "30 seconds"};
 
@@ -101,7 +101,7 @@ public class ServerGUI implements Runnable {
         buttonConnectDb.setFont(font.deriveFont(30f));
         buttonConnectDb.setBackground(Color.white);
         navPanelSettings.add(buttonConnectDb);
-        final JLabel labelQuestionSet = new JLabel("Question set:", SwingConstants.RIGHT);
+        final JLabel labelQuestionSet = new JLabel("Questions/Person:", SwingConstants.RIGHT);
         labelQuestionSet.setFont(font.deriveFont(30f));
         labelQuestionSet.setForeground(Color.white);
         navPanelSettings.add(labelQuestionSet);
@@ -110,7 +110,7 @@ public class ServerGUI implements Runnable {
         }
         questionSetsList.setFont(font.deriveFont(18f));
         navPanelSettings.add(questionSetsList);
-        final JLabel labelShuffle = new JLabel("Shufle:", SwingConstants.RIGHT);
+        final JLabel labelShuffle = new JLabel("Random:", SwingConstants.RIGHT);
         labelShuffle.setFont(font.deriveFont(30f));
         labelShuffle.setForeground(Color.white);
         navPanelSettings.add(labelShuffle);
@@ -184,7 +184,7 @@ public class ServerGUI implements Runnable {
             labelSocketServer.setText(mess);
             labelSocketServer.setForeground(new Color(0, 255, 71));
         }
-        textArea.append(mess + "\n");
+        textArea.append(type.toString() + " " + mess + "\n");
         textArea.setCaretPosition(textArea.getDocument().getLength());
     }
 

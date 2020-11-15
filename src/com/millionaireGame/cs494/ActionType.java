@@ -7,7 +7,8 @@ public enum ActionType {
     DISS("DISS"),
     CONN("CONN"),
     CLCN("CLCN"),
-    ERRO("ERRO");
+    ERRO("ERRO"),
+    NAME("NAME");
 
     private String type;
 
