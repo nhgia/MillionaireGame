@@ -1,9 +1,14 @@
 package com.millionaireGame.cs494;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.awt.*;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.concurrent.*;
 
@@ -21,11 +26,17 @@ public class ServerMain implements Runnable {
 
     public static int numberOfClients = 0;
 
+    private String dataJSON = new String((Files.readAllBytes(Paths.get(".\\resource\\data.json"))));
+    private JSONArray questions;
+
     public ServerMain() throws IOException, FontFormatException {
         actionSendMessage = this::actionSendMessageToClients;
         frontend = new ServerGUI(actionSendMessage);
         frontendThread = new Thread(frontend);
         thread = new Thread(this, "Awaiting");
+        questions = new JSONArray(dataJSON);
+//        JSONObject question = (JSONObject) questions.get(0);
+//        question.get("A");
     }
 
     public static void main(String[] args) {
