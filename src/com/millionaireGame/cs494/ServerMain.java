@@ -26,11 +26,17 @@ public class ServerMain implements Runnable {
 
     public static int numberOfClients = 0;
 
+    private String dataJSON = new String((Files.readAllBytes(Paths.get(".\\resource\\data.json"))));
+    private JSONArray questions;
+
     public ServerMain() throws IOException, FontFormatException {
         actionSendMessage = this::actionSendMessageToClients;
         frontend = new ServerGUI(actionSendMessage);
         frontendThread = new Thread(frontend);
         thread = new Thread(this, "Awaiting");
+        questions = new JSONArray(dataJSON);
+//        JSONObject question = (JSONObject) questions.get(0);
+//        question.get("A");
     }
 
     public static void main(String[] args) {
@@ -110,20 +116,5 @@ public class ServerMain implements Runnable {
 //                break;
 //        }
 
-    }
-    public void ReadJSonFile() throws IOException, FontFormatException {
-        String data = ".\\resource\\data.json";
-        try{
-            String content = new String((Files.readAllBytes(Paths.get(data))));
-            JSONObject obj = new JSONObject(content);
-            JSONArray question = obj.getJSONArray("question");
-            JSONArray answerA = obj.getJSONArray("A");
-            JSONArray answerB = obj.getJSONArray("B");
-            JSONArray answerC = obj.getJSONArray("C");
-            JSONArray answerD = obj.getJSONArray("D");
-            JSONArray answer = obj.getJSONArray("answer");
-        } catch (IOException e){
-            e.printStackTrace();
-        }
     }
 }
