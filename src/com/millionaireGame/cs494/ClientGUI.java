@@ -137,9 +137,11 @@ public class ClientGUI implements Runnable{
 
     public void display(final ActionType type, final String s) {
         textArea.append(type.toString() + " " + s + "\n");
-        System.out.println(type.toString() + " " + s + "\n");
         if (type == ActionType.ERRO) {
-            buttonName.setText(s);
+            tf.setText(s);
+            tf.setForeground(Color.red);
+            tf.setBorder(BorderFactory.createLineBorder(Color.red, 6));
+            tf.setEditable(false);
             buttonName.setEnabled(false);
         }
         else if (type == ActionType.STGM) {

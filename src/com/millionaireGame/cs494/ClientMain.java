@@ -51,6 +51,7 @@ public class ClientMain implements Runnable {
             }
         } catch (Exception e) {
             frontend.display(ActionType.ERRO, e.getMessage());
+            frontend.frame.setTitle("Millionaire - Client | " + e.getMessage());
             e.printStackTrace(System.err);
         }
         finally {
@@ -81,7 +82,15 @@ public class ClientMain implements Runnable {
             case CONN:
                 break;
             case STGM:
+            case QUES:
+            case ANSA:
+            case ANSB:
+            case ANSC:
+            case ANSD:
                 frontend.display(type, message);
+                break;
+            case ERRO:
+                frontend.frame.setTitle("Millionaire - Client | " + message);
                 break;
         }
     }

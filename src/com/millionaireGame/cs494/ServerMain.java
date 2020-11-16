@@ -90,9 +90,6 @@ public class ServerMain implements Runnable {
     }
 
     void actionSendMessageToClients(ActionType type, String s) {
-//        for (ClientController client : clients) {
-//            client.actionSendToClient(type, s);
-//        }
         frontend.display(ActionType.MESG, s);
         if (type == ActionType.STGM) {
             //DUE CODE O DAY NHE!
@@ -105,6 +102,11 @@ public class ServerMain implements Runnable {
                 client.actionSendToClient(ActionType.ANSB, (String) question.get("B"));
                 client.actionSendToClient(ActionType.ANSC, (String) question.get("C"));
                 client.actionSendToClient(ActionType.ANSD, (String) question.get("D"));
+            }
+        }
+        else {
+            for (ClientController client : clients) {
+                client.actionSendToClient(type, s);
             }
         }
     }
