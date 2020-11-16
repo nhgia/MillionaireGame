@@ -93,6 +93,9 @@ public class ServerMain implements Runnable {
             client.actionSendToClient(type, s);
         }
         frontend.display(ActionType.MESG, s);
+        if (type == ActionType.STGM) {
+            //DUE CODE O DAY NHE!
+        }
     }
 
     void didReceiveMessage(String s) {

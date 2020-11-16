@@ -11,9 +11,11 @@ import java.io.IOException;
 
 public class ClientGUI implements Runnable{
     public final JFrame frame = new JFrame("Millionaire - Client | Connecting...");
+    private JPanel cards;
+    private CardLayout cardLayout;
     private ImagePanel panelMain;
     private JButton buttonName = new JButton("Connect");
-    private JButton buttonDisconnect = new JButton("Disconnect");
+    private JButton buttonDisconnect = new JButton("Disconnect & close");
     private JTextField tf = new JTextField();
     private JLabel labelEnterName = new JLabel("Please enter your name");
 
@@ -31,12 +33,15 @@ public class ClientGUI implements Runnable{
     }
 
     private void setupView() throws IOException {
+        cardLayout = new CardLayout();
+        cards = new JPanel(cardLayout);
+
         BufferedImage myImage = ImageIO.read(new File("resource/background_setup.png"));
         panelMain = new ImagePanel(myImage);
         panelMain.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.VERTICAL;
-        frame.setContentPane(panelMain);
+        frame.setContentPane(cards);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         final Dimension dimen = new Dimension(960, 540);
         frame.setLocation(300, 300);
@@ -80,6 +85,7 @@ public class ClientGUI implements Runnable{
             }
         });
         buttonName.setFont(font.deriveFont(36f));
+        buttonDisconnect.setFont(font.deriveFont(36f));
         gbc.gridy = 0;
         panelMain.add(labelEnterName, gbc);
         gbc.gridy = 1;
@@ -91,17 +97,10 @@ public class ClientGUI implements Runnable{
         gbc.ipadx = 0;
         gbc.insets = new Insets(24,0,0,0);
         panelMain.add(buttonName, gbc);
-        textArea.setOpaque(true);
-        textArea.setBackground(Color.CYAN);
-        textArea.setFont(font.deriveFont(56f));
-        textArea.setText("");
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
-        panelPlay = new ImagePanel(myImage);
-        panelPlay.setLayout(new BorderLayout());
-        DefaultCaret caret = (DefaultCaret) textArea.getCaret();
-        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-        panelPlay.add(textArea, BorderLayout.CENTER);
+        setupPanelPlay();
+
+        cards.add(panelMain, "MAIN");
+        cards.add(panelPlay, "PLAY");
         buttonName.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -111,9 +110,24 @@ public class ClientGUI implements Runnable{
         buttonDisconnect.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                System.exit(0);
             }
         });
+    }
+
+    private void setupPanelPlay() throws IOException {
+        BufferedImage myImage = ImageIO.read(new File("resource/background_play.png"));
+        textArea.setOpaque(false);
+        textArea.setFont(font.deriveFont(36f));
+        textArea.setForeground(Color.white);
+        textArea.setText("");
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        panelPlay = new ImagePanel(myImage);
+        panelPlay.setLayout(new BorderLayout());
+        DefaultCaret caret = (DefaultCaret) textArea.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+        panelPlay.add(textArea, BorderLayout.CENTER);
     }
 
     @Override
@@ -122,11 +136,15 @@ public class ClientGUI implements Runnable{
     }
 
     public void display(final ActionType type, final String s) {
-        textArea.append(type + " " + s + "\n");
-        System.out.println(type + " " + s + "\n");
+        textArea.append(type.toString() + " " + s + "\n");
+        System.out.println(type.toString() + " " + s + "\n");
         if (type == ActionType.ERRO) {
             buttonName.setText(s);
             buttonName.setEnabled(false);
+        }
+        else if (type == ActionType.STGM) {
+            textArea.setText(type.toString() + " " + s + "\n");
+            cardLayout.next(cards);
         }
     }
 
@@ -134,8 +152,20 @@ public class ClientGUI implements Runnable{
         String s = tf.getText();
         actionSendMessage.mess(ActionType.NAME, s);
         display(ActionType.NAME, s);
-        tf.setText("");
-        frame.setTitle("START GAME");
-        frame.setContentPane(panelPlay);
+        labelEnterName.setText("Welcome, " + s + "!");
+        tf.setText("Waiting for host to start the game");
+        tf.setForeground(Color.decode("#00FF28"));
+        tf.setBorder(BorderFactory.createLineBorder(Color.decode("#00FF28"), 6));
+        tf.setEditable(false);
+        panelMain.remove(buttonName);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.VERTICAL;
+        gbc.gridy = 4;
+        gbc.ipady = 0;
+        gbc.ipadx = 0;
+        gbc.insets = new Insets(24,0,0,0);
+        panelMain.add(buttonDisconnect, gbc);
+        panelMain.revalidate();
+        panelMain.repaint();
     }
 }

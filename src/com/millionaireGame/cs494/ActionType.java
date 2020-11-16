@@ -7,7 +7,9 @@ public enum ActionType {
     DISS("DISS"),
     CONN("CONN"),
     CLCN("CLCN"),
+    CLDN("CLDN"), // Client Disconnect
     ERRO("ERRO"),
+    STGM("STGM"), // Start game - Server send to all clients.
     NAME("NAME");
 
     private String type;

@@ -168,13 +168,29 @@ public class ServerGUI implements Runnable {
         buttonDisconnect.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                int n = JOptionPane.showConfirmDialog(
+                        frame,
+                        "Do you want to disconnect server?\nThis will close all clients' connection that have " +
+                                "connected.",
+                        "Warning - Disconnect Server",
+                        JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+                if(n == JOptionPane.OK_OPTION)
+                {
+                    actionSendMessage.mess(ActionType.DISS, "");
+                    System.exit(0);
+                }
             }
         });
         buttonConnectDb.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
+            }
+        });
+        buttonStart.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                actionSendMessage.mess(ActionType.STGM, " ");
             }
         });
     }

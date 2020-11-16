@@ -76,13 +76,20 @@ public class ClientMain implements Runnable {
                 frontend.display(type, "Your ID is " + clientId);
                 break;
             case DISS:
+                System.exit(0);
                 break;
             case CONN:
+                break;
+            case STGM:
+                frontend.display(type, message);
                 break;
         }
     }
 
     public void actionSendMessageToServer(ActionType type, String s) {
+        if (type == ActionType.NAME) {
+            frontend.frame.setTitle("Millionaire - Client | Name: " + s + " | ID: " + clientId);
+        }
         if (out != null) {
             out.println(type.toString() + " " + s);
         }
