@@ -1,6 +1,7 @@
 package com.millionaireGame.cs494;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.awt.*;
 import java.io.IOException;
@@ -89,12 +90,22 @@ public class ServerMain implements Runnable {
     }
 
     void actionSendMessageToClients(ActionType type, String s) {
-        for (ClientController client : clients) {
-            client.actionSendToClient(type, s);
-        }
+//        for (ClientController client : clients) {
+//            client.actionSendToClient(type, s);
+//        }
         frontend.display(ActionType.MESG, s);
         if (type == ActionType.STGM) {
             //DUE CODE O DAY NHE!
+            //loop for 0 to length JSONArray
+            JSONObject question = (JSONObject) getRandomQuestionSet(questions, 10 * numberOfClients).get(0);
+            for (ClientController client : clients) {
+                client.actionSendToClient(type, s);
+                client.actionSendToClient(ActionType.QUES, (String) question.get("question"));
+                client.actionSendToClient(ActionType.ANSA, (String) question.get("A"));
+                client.actionSendToClient(ActionType.ANSB, (String) question.get("B"));
+                client.actionSendToClient(ActionType.ANSC, (String) question.get("C"));
+                client.actionSendToClient(ActionType.ANSD, (String) question.get("D"));
+            }
         }
     }
 
@@ -122,7 +133,7 @@ public class ServerMain implements Runnable {
 //        }
 
     }
-    public List<Object> getRandomElement(JSONArray originArray, int totalQuestion){
+    public JSONArray getRandomQuestionSet(JSONArray originArray, int totalQuestion){
 //        ArrayList<JSONObject> a = new ArrayList<>();
         Random rand = new Random();
         List<Object> setQuestion = new ArrayList<>();
@@ -133,6 +144,6 @@ public class ServerMain implements Runnable {
 //        }
         setQuestion = originArray.toList();
         Collections.shuffle(setQuestion);
-        return setQuestion.subList(0, totalQuestion);
+        return new JSONArray(setQuestion.subList(0, totalQuestion));
     }
 }

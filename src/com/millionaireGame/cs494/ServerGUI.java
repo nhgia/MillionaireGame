@@ -190,7 +190,7 @@ public class ServerGUI implements Runnable {
         buttonStart.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                actionSendMessage.mess(ActionType.STGM, " ");
+                actionSendMessage.mess(ActionType.STGM, "");
             }
         });
     }

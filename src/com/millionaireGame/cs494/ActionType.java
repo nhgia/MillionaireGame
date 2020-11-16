@@ -10,7 +10,13 @@ public enum ActionType {
     CLDN("CLDN"), // Client Disconnect
     ERRO("ERRO"),
     STGM("STGM"), // Start game - Server send to all clients.
-    NAME("NAME");
+    NAME("NAME"),
+    ANSA("ANSA"),
+    ANSB("ANSB"),
+    ANSC("ANSC"),
+    ANSD("ANSD"),
+    QUES("QUES"),
+    TANS("TANS");
 
     private String type;
 
