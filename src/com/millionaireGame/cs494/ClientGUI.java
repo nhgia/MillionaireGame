@@ -21,6 +21,12 @@ public class ClientGUI implements Runnable{
 
     private ImagePanel panelPlay;
     private JTextArea textArea = new JTextArea();
+    private JPanel panelQuestionAnswers;
+    private ImagePanel panelQuestion;
+    private ImagePanel panelAnsA;
+    private ImagePanel panelAnsB;
+    private ImagePanel panelAnsC;
+    private ImagePanel panelAnsD;
 
     File font_file = new File("fonts/BebasNeue-Regular.ttf");
     Font font = Font.createFont(Font.TRUETYPE_FONT, font_file);
@@ -124,10 +130,22 @@ public class ClientGUI implements Runnable{
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         panelPlay = new ImagePanel(myImage);
-        panelPlay.setLayout(new BorderLayout());
+        panelPlay.setLayout(new GridLayout(2,1,0,0));
         DefaultCaret caret = (DefaultCaret) textArea.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-        panelPlay.add(textArea, BorderLayout.CENTER);
+        panelQuestionAnswers = new JPanel(new GridBagLayout());
+        panelQuestionAnswers.setOpaque(false);
+        panelQuestion = new ImagePanel(ImageIO.read(new File("resource/background_question.png")));
+        panelQuestion.setOpaque(false);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.VERTICAL;
+        gbc.gridy = 1;
+        gbc.ipady = 96;
+        gbc.ipadx = 960;
+        gbc.insets = new Insets(0,0,0,0);
+        panelQuestionAnswers.add(panelQuestion, gbc);
+        panelPlay.add(textArea);
+        panelPlay.add(panelQuestionAnswers);
     }
 
     @Override
@@ -152,22 +170,28 @@ public class ClientGUI implements Runnable{
 
     public void actionTappedButton() {
         String s = tf.getText();
-        actionSendMessage.mess(ActionType.NAME, s);
-        display(ActionType.NAME, s);
-        labelEnterName.setText("Welcome, " + s + "!");
-        tf.setText("Waiting for host to start the game");
-        tf.setForeground(Color.decode("#00FF28"));
-        tf.setBorder(BorderFactory.createLineBorder(Color.decode("#00FF28"), 6));
-        tf.setEditable(false);
-        panelMain.remove(buttonName);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.VERTICAL;
-        gbc.gridy = 4;
-        gbc.ipady = 0;
-        gbc.ipadx = 0;
-        gbc.insets = new Insets(24,0,0,0);
-        panelMain.add(buttonDisconnect, gbc);
-        panelMain.revalidate();
-        panelMain.repaint();
+        if (s.equals("")) {
+            JOptionPane.showMessageDialog(frame, "Name must not be empty!","Client - Warning",
+                    JOptionPane.WARNING_MESSAGE);
+        }
+        else {
+            actionSendMessage.mess(ActionType.NAME, s);
+            display(ActionType.NAME, s);
+            labelEnterName.setText("Welcome, " + s + "!");
+            tf.setText("Waiting for host to start the game");
+            tf.setForeground(Color.decode("#00FF28"));
+            tf.setBorder(BorderFactory.createLineBorder(Color.decode("#00FF28"), 6));
+            tf.setEditable(false);
+            panelMain.remove(buttonName);
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.fill = GridBagConstraints.VERTICAL;
+            gbc.gridy = 4;
+            gbc.ipady = 0;
+            gbc.ipadx = 0;
+            gbc.insets = new Insets(24, 0, 0, 0);
+            panelMain.add(buttonDisconnect, gbc);
+            panelMain.revalidate();
+            panelMain.repaint();
+        }
     }
 }

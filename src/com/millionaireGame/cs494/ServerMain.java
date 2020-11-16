@@ -3,6 +3,7 @@ package com.millionaireGame.cs494;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -38,8 +39,6 @@ public class ServerMain implements Runnable {
         frontendThread = new Thread(frontend);
         thread = new Thread(this, "Awaiting");
         questions = new JSONArray(dataJSON);
-//        JSONObject question = (JSONObject) questions.get(0);
-//        question.get("A");
     }
 
     public static void main(String[] args) {
@@ -83,26 +82,31 @@ public class ServerMain implements Runnable {
         }
     }
 
-    public void actionDisconnectClient(int clientId, Exception e) {
-        frontend.display(ActionType.MESG,"Id " + clientId + ": " + e.getMessage() + "\nClient ID " + clientId +" - " +
-                "Disconnected" + "!");
+    public void actionDisconnectClient(int clientId, String name, Exception e) {
+        frontend.playersName.removeElement("#" + clientId + ": " + name);
         e.printStackTrace(System.err);
+
     }
 
     void actionSendMessageToClients(ActionType type, String s) {
-        frontend.display(ActionType.MESG, s);
+        frontend.display(type, s);
         if (type == ActionType.STGM) {
-            //DUE CODE O DAY NHE!
             //loop for 0 to length JSONArray
-            JSONObject question = (JSONObject) getRandomQuestionSet(questions, 10 * numberOfClients).get(0);
-            for (ClientController client : clients) {
-                client.actionSendToClient(type, s);
-                client.actionSendToClient(ActionType.QUES, (String) question.get("question"));
-                client.actionSendToClient(ActionType.ANSA, (String) question.get("A"));
-                client.actionSendToClient(ActionType.ANSB, (String) question.get("B"));
-                client.actionSendToClient(ActionType.ANSC, (String) question.get("C"));
-                client.actionSendToClient(ActionType.ANSD, (String) question.get("D"));
+            //violate
+            if (frontend.playersName.getSize() < 2) {
+                frontend.display(ActionType.ERRO, "You need 2 or more connected players to start.");
             }
+            else {
+                JSONObject question = (JSONObject) getRandomQuestionSet(questions, 10 * numberOfClients).get(0);
+                for (ClientController client : clients) {
+                    client.actionSendToClient(type, s);
+                    client.actionSendToClient(ActionType.QUES, (String) question.get("question"));
+                    client.actionSendToClient(ActionType.ANSA, (String) question.get("A"));
+                    client.actionSendToClient(ActionType.ANSB, (String) question.get("B"));
+                    client.actionSendToClient(ActionType.ANSC, (String) question.get("C"));
+                    client.actionSendToClient(ActionType.ANSD, (String) question.get("D"));
+                };
+            };
         }
         else {
             for (ClientController client : clients) {
@@ -111,28 +115,28 @@ public class ServerMain implements Runnable {
         }
     }
 
-    void didReceiveMessage(String s) {
+    void didReceiveMessage(int clientID, String s) {
         // Guard
         if (s == null) return;
         // Parse message
         String message = s;
         ActionType type = ActionType.valueOf(message.substring(0,4));
         message = message.substring(5);
-        frontend.display(type, message);
-//        switch (type) {
-//            case MESG:
-//                frontend.display(type.toString() + ": " + message);
-//                break;
-//            case CLID:
-//                clientId = Integer.parseInt(message);
-//                frame.setTitle("Millionaire - Client | ID: " + clientId);
-//                display("Your ID is " + clientId);
-//                break;
-//            case DISS:
-//                break;
-//            case CONN:
-//                break;
-//        }
+        switch (type) {
+            case MESG:
+                frontend.display(type, message);
+                break;
+            case CLID:
+                break;
+            case DISS:
+                break;
+            case CONN:
+                break;
+            case NAME:
+                clients.get(clientID - 1).setName(message);
+                frontend.playersName.addElement("#" + clientID + ": " + message);
+                break;
+        }
 
     }
     public JSONArray getRandomQuestionSet(JSONArray originArray, int totalQuestion){

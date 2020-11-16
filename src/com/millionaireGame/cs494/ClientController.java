@@ -12,6 +12,7 @@ public class ClientController implements Runnable {
     private final ServerMain serverMain;
 
     private int clientId;
+    private String clientName;
 
     public ClientController(Socket clientSocket, ServerMain server) throws IOException {
         this.client = clientSocket;
@@ -25,10 +26,10 @@ public class ClientController implements Runnable {
     public void run() {
         try {
             while (true) {
-                serverMain.didReceiveMessage(in.nextLine());
+                serverMain.didReceiveMessage(clientId, in.nextLine());
             }
         } catch (Exception e) {
-            serverMain.actionDisconnectClient(clientId, e);
+            serverMain.actionDisconnectClient(clientId, clientName, e);
         }
         finally {
             in.close();
@@ -38,14 +39,18 @@ public class ClientController implements Runnable {
 
     public void actionSendToClient(ActionType action, String str) {
         if (out != null) {
-            getId(str, action);
+            if (action == ActionType.CLID) {
+                setId(str);
+            };
             out.println(action.toString() + " " + str);
         }
     }
 
-    private void getId(String str, ActionType type) {
-        if (type == ActionType.CLID) {
-            clientId = Integer.parseInt(str);
-        }
+    public void setId(String str) {
+        clientId = Integer.parseInt(str);
+    }
+
+    public void setName(String str) {
+        clientName = str;
     }
 }

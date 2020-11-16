@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 interface MessageToSend {
     void mess(ActionType type, String s);
@@ -18,7 +19,6 @@ interface MessageToSend {
 public class ServerGUI implements Runnable {
     private final JFrame frame = new JFrame("Millionaire - Server");
     private ImagePanel panelMain;
-    private JButton buttonSend = new JButton("Send");
 
     private JButton buttonStart = new JButton("  START GAME  ");
     private JButton buttonConnectDb = new JButton("Connect");
@@ -26,8 +26,7 @@ public class ServerGUI implements Runnable {
     private JComboBox modeList = new JComboBox();
     private JComboBox answerTimeList = new JComboBox();
     private JScrollPane scrollPane;
-    private JTextArea textArea = new JTextArea();
-    private JTextField textField = new JTextField();
+    private JList players;
     private JLabel labelSocketServer = new JLabel("Not connected", SwingConstants.CENTER);
     private JCheckBox checkBox = new JCheckBox();
     private JButton buttonReset = new JButton("Reset settings");
@@ -41,6 +40,7 @@ public class ServerGUI implements Runnable {
     public String[] qSets = {"5", "10", "15", "20", "30"};
     public String[] modeSets = {"Battle-royale", "Lightning"};
     public String[] timeSets = {"10 seconds", "20 seconds", "30 seconds"};
+    public DefaultListModel playersName = new DefaultListModel();
 
     public ServerGUI(MessageToSend closure) throws IOException, FontFormatException {
         this.actionSendMessage = closure;
@@ -142,28 +142,18 @@ public class ServerGUI implements Runnable {
         final JLabel labelPlayersConnected = new JLabel("Players connected:");
         labelPlayersConnected.setFont(font.deriveFont(30f));
         labelPlayersConnected.setForeground(Color.white);
+        labelPlayersConnected.setBorder(new EmptyBorder(10,20,10,20));
         navPanelPlayers.add(labelPlayersConnected, BorderLayout.PAGE_START);
-        textArea.setOpaque(false);
-        textArea.setText("");
-        textArea.setForeground(Color.black);
-        textArea.setFont(font.deriveFont(32f));
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
-        textArea.setHighlighter(null);
-        textArea.setEditable(false);
-        DefaultCaret caret = (DefaultCaret) textArea.getCaret();
-        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-        scrollPane = new JScrollPane(textArea);
+        players = new JList(playersName);
+        players.setFont(font.deriveFont(30f));
+        players.setOpaque(false);
+        players.setDragEnabled(false);
+        players.setEnabled(false);
+        players.setBorder(new EmptyBorder(0,10,0,10));
+        scrollPane = new JScrollPane(players);
         scrollPane.setOpaque(false);
         navPanelPlayers.add(scrollPane, BorderLayout.CENTER);
 
-        buttonSend.setFont(font.deriveFont(24f));
-        buttonSend.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                actionTappedButton();
-            }
-        });
         buttonDisconnect.setFont(font.deriveFont(24f));
         buttonDisconnect.addActionListener(new ActionListener() {
             @Override
@@ -195,18 +185,18 @@ public class ServerGUI implements Runnable {
         });
     }
 
-    public void actionTappedButton() {
-        String myString = textField.getText();
-        actionSendMessage.mess(ActionType.MESG, myString);
-    }
-
     public void display(final ActionType type,final String mess) {
-        if (type == ActionType.CONN) {
-            labelSocketServer.setText(mess);
-            labelSocketServer.setForeground(new Color(0, 255, 71));
+        switch (type) {
+            case CONN:
+                labelSocketServer.setText(mess);
+                labelSocketServer.setForeground(new Color(0, 255, 71));
+                break;
+            case NAME:
+                break;
+            case ERRO:
+                JOptionPane.showMessageDialog(frame, mess,"Server - Warning", JOptionPane.WARNING_MESSAGE);
+                break;
         }
-        textArea.append(type.toString() + " " + mess + "\n");
-        textArea.setCaretPosition(textArea.getDocument().getLength());
     }
 
     @Override
