@@ -2,7 +2,11 @@ package com.millionaireGame.cs494;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultCaret;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -27,6 +31,15 @@ public class ClientGUI implements Runnable{
     private ImagePanel panelAnsB;
     private ImagePanel panelAnsC;
     private ImagePanel panelAnsD;
+    private JTextPane labelQuestion = new JTextPane();
+    private JButton labelAnsA = new JButton("");
+    private JButton labelAnsB = new JButton("");
+    private JButton labelAnsC = new JButton("");
+    private JButton labelAnsD = new JButton("");
+    private JLabel labelA = new JLabel("                       A: ", SwingConstants.LEADING);
+    private JLabel labelB = new JLabel("       B: ", SwingConstants.LEADING);
+    private JLabel labelC = new JLabel("                       C: ", SwingConstants.LEADING);
+    private JLabel labelD = new JLabel("       D: ", SwingConstants.LEADING);
 
     File font_file = new File("fonts/BebasNeue-Regular.ttf");
     Font font = Font.createFont(Font.TRUETYPE_FONT, font_file);
@@ -129,6 +142,7 @@ public class ClientGUI implements Runnable{
         textArea.setText("");
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
+        textArea.setVisible(false);
         panelPlay = new ImagePanel(myImage);
         panelPlay.setLayout(new GridLayout(2,1,0,0));
         DefaultCaret caret = (DefaultCaret) textArea.getCaret();
@@ -138,14 +152,121 @@ public class ClientGUI implements Runnable{
         panelQuestion = new ImagePanel(ImageIO.read(new File("resource/background_question.png")));
         panelQuestion.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.VERTICAL;
-        gbc.gridy = 1;
-        gbc.ipady = 96;
-        gbc.ipadx = 960;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridy = 0;
+        gbc.gridx = 0;
+        gbc.gridwidth = 960;
+        gbc.weightx = 960;
+        gbc.gridheight = 96;
+        gbc.weighty = 96;
         gbc.insets = new Insets(0,0,0,0);
         panelQuestionAnswers.add(panelQuestion, gbc);
+        panelAnsA = new ImagePanel(ImageIO.read(new File("resource/background_answer.png")));
+        panelAnsA.setOpaque(false);
+        gbc.gridy = 96;
+        gbc.gridx = 0;
+        gbc.gridheight = 57;
+        gbc.weighty = 57;
+        gbc.gridwidth = 480;
+        gbc.weightx = 480;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(0,0,0,0);
+        panelQuestionAnswers.add(panelAnsA, gbc);
+        panelAnsB = new ImagePanel(ImageIO.read(new File("resource/background_answer_right.png")));
+        panelAnsB.setOpaque(false);
+        gbc.gridy = 96;
+        gbc.gridx = 480;
+        gbc.gridheight = 57;
+        gbc.weighty = 57;
+        gbc.gridwidth = 480;
+        gbc.weightx = 480;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(0,0,0,0);
+        panelQuestionAnswers.add(panelAnsB, gbc);
+        panelAnsC = new ImagePanel(ImageIO.read(new File("resource/background_answer.png")));
+        panelAnsC.setOpaque(false);
+        gbc.gridy = 153;
+        gbc.gridx = 0;
+        gbc.gridheight = 57;
+        gbc.weighty = 57;
+        gbc.gridwidth = 480;
+        gbc.weightx = 480;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(0,0,0,0);
+        panelQuestionAnswers.add(panelAnsC, gbc);
+        panelAnsD = new ImagePanel(ImageIO.read(new File("resource/background_answer_right.png")));
+        panelAnsD.setOpaque(false);
+        gbc.gridy = 153;
+        gbc.gridx = 480;
+        gbc.gridheight = 57;
+        gbc.weighty = 57;
+        gbc.gridwidth = 480;
+        gbc.weightx = 480;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(0,0,0,0);
+        panelQuestionAnswers.add(panelAnsD, gbc);
         panelPlay.add(textArea);
         panelPlay.add(panelQuestionAnswers);
+
+        labelQuestion.setForeground(Color.white);
+        labelQuestion.setBorder(new EmptyBorder(8,142,8,142));
+        labelQuestion.setOpaque(false);
+        labelQuestion.setEditable(false);
+        labelQuestion.setHighlighter(null);
+        StyledDocument doc = labelQuestion.getStyledDocument();
+        SimpleAttributeSet center = new SimpleAttributeSet();
+        StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+        StyleConstants.setFontSize(center, 24);
+        doc.setParagraphAttributes(0, doc.getLength(), center, false);
+        panelQuestion.add(labelQuestion);
+
+        panelAnsA.setLayout(new FlowLayout(FlowLayout.LEADING));
+        labelA.setFont(font.deriveFont(36f));
+        labelA.setForeground(Color.decode("#FFE600"));
+        labelAnsA.setFont(font.deriveFont(32f));
+        labelAnsA.setForeground(Color.white);
+        labelAnsA.setOpaque(false);
+        labelAnsA.setBorder(null);
+        labelAnsA.setBorderPainted(false);
+        labelAnsA.setContentAreaFilled(false);
+        panelAnsA.add(labelA);
+        panelAnsA.add(labelAnsA);
+
+        panelAnsB.setLayout(new FlowLayout(FlowLayout.LEADING));
+        labelB.setFont(font.deriveFont(36f));
+        labelB.setForeground(Color.decode("#FFE600"));
+        labelAnsB.setFont(font.deriveFont(32f));
+        labelAnsB.setForeground(Color.white);
+        labelAnsB.setOpaque(false);
+        labelAnsB.setBorder(null);
+        labelAnsB.setBorderPainted(false);
+        labelAnsB.setContentAreaFilled(false);
+        panelAnsB.add(labelB);
+        panelAnsB.add(labelAnsB);
+
+        panelAnsC.setLayout(new FlowLayout(FlowLayout.LEADING));
+        labelC.setFont(font.deriveFont(36f));
+        labelC.setForeground(Color.decode("#FFE600"));
+        labelAnsC.setFont(font.deriveFont(32f));
+        labelAnsC.setForeground(Color.white);
+        labelAnsC.setOpaque(false);
+        labelAnsC.setBorder(null);
+        labelAnsC.setBorderPainted(false);
+        labelAnsC.setContentAreaFilled(false);
+        panelAnsC.add(labelC);
+        panelAnsC.add(labelAnsC);
+
+        panelAnsD.setLayout(new FlowLayout(FlowLayout.LEADING));
+        labelD.setFont(font.deriveFont(36f));
+        labelD.setForeground(Color.decode("#FFE600"));
+        labelAnsD.setFont(font.deriveFont(32f));
+        labelAnsD.setForeground(Color.white);
+        labelAnsD.setOpaque(false);
+        labelAnsD.setBorder(null);
+        labelAnsD.setBorderPainted(false);
+        labelAnsD.setContentAreaFilled(false);
+        panelAnsD.add(labelD);
+        panelAnsD.add(labelAnsD);
     }
 
     @Override
@@ -165,6 +286,21 @@ public class ClientGUI implements Runnable{
         else if (type == ActionType.STGM) {
             textArea.setText(type.toString() + " " + s + "\n");
             cardLayout.next(cards);
+        }
+        else if (type == ActionType.QUES) {
+            labelQuestion.setText(s);
+        }
+        else if (type == ActionType.ANSA) {
+            labelAnsA.setText(s);
+        }
+        else if (type == ActionType.ANSB) {
+            labelAnsB.setText(s);
+        }
+        else if (type == ActionType.ANSC) {
+            labelAnsC.setText(s);
+        }
+        else if (type == ActionType.ANSD) {
+            labelAnsD.setText(s);
         }
     }
 
