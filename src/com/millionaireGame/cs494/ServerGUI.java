@@ -21,7 +21,7 @@ public class ServerGUI implements Runnable {
     private ImagePanel panelMain;
 
     private JButton buttonStart = new JButton("  START GAME  ");
-    private JButton buttonConnectDb = new JButton("Connect");
+    private JLabel labelDb = new JLabel("Not loaded", SwingConstants.CENTER);
     private JComboBox questionSetsList = new JComboBox();
     private JComboBox modeList = new JComboBox();
     private JComboBox answerTimeList = new JComboBox();
@@ -37,9 +37,9 @@ public class ServerGUI implements Runnable {
 
     public MessageToSend actionSendMessage;
 
-    public String[] qSets = {"5", "10", "15", "20", "30"};
-    public String[] modeSets = {"Battle-royale", "Lightning"};
-    public String[] timeSets = {"10 seconds", "20 seconds", "30 seconds"};
+    public String[] qSets = {"10"};
+    public String[] modeSets = {"Normal"};
+    public String[] timeSets = {"20 seconds"};
     public DefaultListModel playersName = new DefaultListModel();
 
     public ServerGUI(MessageToSend closure) throws IOException, FontFormatException {
@@ -94,13 +94,13 @@ public class ServerGUI implements Runnable {
         labelSocketServer.setFont(font.deriveFont(30f));
         labelSocketServer.setForeground(Color.white);
         navPanelSettings.add(labelSocketServer);
-        final JLabel labelConnectDb = new JLabel("Connect to database", SwingConstants.RIGHT);
+        final JLabel labelConnectDb = new JLabel("Database", SwingConstants.RIGHT);
         labelConnectDb.setFont(font.deriveFont(30f));
         labelConnectDb.setForeground(Color.white);
         navPanelSettings.add(labelConnectDb);
-        buttonConnectDb.setFont(font.deriveFont(30f));
-        buttonConnectDb.setBackground(Color.white);
-        navPanelSettings.add(buttonConnectDb);
+        labelDb.setFont(font.deriveFont(30f));
+        labelDb.setBackground(Color.white);
+        navPanelSettings.add(labelDb);
         final JLabel labelQuestionSet = new JLabel("Questions/Person:", SwingConstants.RIGHT);
         labelQuestionSet.setFont(font.deriveFont(30f));
         labelQuestionSet.setForeground(Color.white);
@@ -114,6 +114,8 @@ public class ServerGUI implements Runnable {
         labelShuffle.setFont(font.deriveFont(30f));
         labelShuffle.setForeground(Color.white);
         navPanelSettings.add(labelShuffle);
+        checkBox.setSelected(true);
+        checkBox.setEnabled(false);
         navPanelSettings.add(checkBox);
         final JLabel labelMode = new JLabel("Mode:", SwingConstants.RIGHT);
         labelMode.setFont(font.deriveFont(30f));
@@ -171,12 +173,6 @@ public class ServerGUI implements Runnable {
                 }
             }
         });
-        buttonConnectDb.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
         buttonStart.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -194,7 +190,14 @@ public class ServerGUI implements Runnable {
             case NAME:
                 break;
             case ERRO:
-                JOptionPane.showMessageDialog(frame, mess,"Server - Warning", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "An error occurred.\n" + mess + "\nPlease close and reopen this " +
+                                "program.","Server - Warning",
+                        JOptionPane.WARNING_MESSAGE);
+                buttonStart.setVisible(false);
+                break;
+            case DBCN:
+                labelDb.setText(mess);
+                labelDb.setForeground(new Color(0, 255, 71));
                 break;
         }
     }

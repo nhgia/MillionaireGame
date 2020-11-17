@@ -39,6 +39,7 @@ public class ServerMain implements Runnable {
         frontendThread = new Thread(frontend);
         thread = new Thread(this, "Awaiting");
         questions = new JSONArray(dataJSON);
+        frontend.display(ActionType.DBCN, "Loaded");
     }
 
     public static void main(String[] args) {

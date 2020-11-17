@@ -49,6 +49,7 @@ public class ClientGUI implements Runnable{
     Font font = Font.createFont(Font.TRUETYPE_FONT, font_file);
 
     public MessageToSend actionSendMessage;
+    public boolean isNotChooseAnswer = true;
 
     public ClientGUI(MessageToSend closure) throws IOException, FontFormatException {
         this.actionSendMessage = closure;
@@ -228,7 +229,7 @@ public class ClientGUI implements Runnable{
         panelQuestion.add(labelQuestion);
 
         final Dimension ansDimen = new Dimension(480, 57);
-        panelAnsA.setLayout(new FlowLayout(FlowLayout.LEADING));
+        panelAnsA.setLayout(new BorderLayout());
         panelAnsA.setPreferredSize(ansDimen);
         panelAnsA.setMaximumSize(ansDimen);
         panelAnsA.setMinimumSize(ansDimen);
@@ -240,10 +241,11 @@ public class ClientGUI implements Runnable{
         labelAnsA.setBorder(null);
         labelAnsA.setBorderPainted(false);
         labelAnsA.setContentAreaFilled(false);
-        panelAnsA.add(labelA);
-        panelAnsA.add(labelAnsA);
+        labelAnsA.setHorizontalAlignment(SwingConstants.LEFT);
+        panelAnsA.add(labelA, BorderLayout.LINE_START);
+        panelAnsA.add(labelAnsA, BorderLayout.CENTER);
 
-        panelAnsB.setLayout(new FlowLayout(FlowLayout.LEADING));
+        panelAnsB.setLayout(new BorderLayout());
         panelAnsB.setPreferredSize(ansDimen);
         panelAnsB.setMaximumSize(ansDimen);
         panelAnsB.setMinimumSize(ansDimen);
@@ -255,10 +257,11 @@ public class ClientGUI implements Runnable{
         labelAnsB.setBorder(null);
         labelAnsB.setBorderPainted(false);
         labelAnsB.setContentAreaFilled(false);
-        panelAnsB.add(labelB);
-        panelAnsB.add(labelAnsB);
+        labelAnsB.setHorizontalAlignment(SwingConstants.LEFT);
+        panelAnsB.add(labelB, BorderLayout.LINE_START);
+        panelAnsB.add(labelAnsB, BorderLayout.CENTER);
 
-        panelAnsC.setLayout(new FlowLayout(FlowLayout.LEADING));
+        panelAnsC.setLayout(new BorderLayout());
         panelAnsC.setPreferredSize(ansDimen);
         panelAnsC.setMaximumSize(ansDimen);
         panelAnsC.setMinimumSize(ansDimen);
@@ -270,10 +273,11 @@ public class ClientGUI implements Runnable{
         labelAnsC.setBorder(null);
         labelAnsC.setBorderPainted(false);
         labelAnsC.setContentAreaFilled(false);
-        panelAnsC.add(labelC);
-        panelAnsC.add(labelAnsC);
+        labelAnsC.setHorizontalAlignment(SwingConstants.LEFT);
+        panelAnsC.add(labelC, BorderLayout.LINE_START);
+        panelAnsC.add(labelAnsC, BorderLayout.CENTER);
 
-        panelAnsD.setLayout(new FlowLayout(FlowLayout.LEADING));
+        panelAnsD.setLayout(new BorderLayout());
         panelAnsD.setPreferredSize(ansDimen);
         panelAnsD.setMaximumSize(ansDimen);
         panelAnsD.setMinimumSize(ansDimen);
@@ -285,8 +289,9 @@ public class ClientGUI implements Runnable{
         labelAnsD.setBorder(null);
         labelAnsD.setBorderPainted(false);
         labelAnsD.setContentAreaFilled(false);
-        panelAnsD.add(labelD);
-        panelAnsD.add(labelAnsD);
+        labelAnsD.setHorizontalAlignment(SwingConstants.LEFT);
+        panelAnsD.add(labelD, BorderLayout.LINE_START);
+        panelAnsD.add(labelAnsD, BorderLayout.CENTER);
 
         labelAnnounce.setFont(font.deriveFont(32f));
         labelAnnounce.setForeground(Color.white);
@@ -302,6 +307,67 @@ public class ClientGUI implements Runnable{
         scrollPane.setBorder(new EmptyBorder(10,10,10,10));
         scrollPane.setPreferredSize(new Dimension(300,120));
         panelInformation.add(scrollPane, BorderLayout.LINE_END);
+
+        labelAnsA.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (isNotChooseAnswer) {
+                    isNotChooseAnswer = false;
+                    try {
+                        panelAnsA.setImage(ImageIO.read(new File("resource/background_answer_chosen.png")));
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                }
+            }
+        });
+        labelAnsB.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (isNotChooseAnswer) {
+                    isNotChooseAnswer = false;
+                    try {
+                        panelAnsB.setImage(ImageIO.read(new File("resource/background_answer_right_chosen.png")));
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                }
+            }
+        });
+        labelAnsC.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (isNotChooseAnswer) {
+                    isNotChooseAnswer = false;
+                    try {
+                        panelAnsC.setImage(ImageIO.read(new File("resource/background_answer_chosen.png")));
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                }
+            }
+        });
+        labelAnsD.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (isNotChooseAnswer) {
+                    isNotChooseAnswer = false;
+                    try {
+                        panelAnsD.setImage(ImageIO.read(new File("resource/background_answer_right_chosen.png")));
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    private void resetAnswerChoose() throws IOException {
+        isNotChooseAnswer = true;
+        panelAnsA.setImage(ImageIO.read(new File("resource/background_answer.png")));
+        panelAnsB.setImage(ImageIO.read(new File("resource/background_answer_right.png")));
+        panelAnsC.setImage(ImageIO.read(new File("resource/background_answer.png")));
+        panelAnsD.setImage(ImageIO.read(new File("resource/background_answer_right.png")));
     }
 
     @Override
@@ -310,18 +376,27 @@ public class ClientGUI implements Runnable{
     }
 
     public void display(final ActionType type, final String s) {
-        textArea.append(type.toString() + " " + s + "\n");
-        textArea.setCaretPosition(textArea.getDocument().getLength());
         if (type == ActionType.ERRO) {
             tf.setText(s);
             tf.setForeground(Color.red);
             tf.setBorder(BorderFactory.createLineBorder(Color.red, 6));
             tf.setEditable(false);
             buttonName.setEnabled(false);
+            textArea.append("Error: " + s + "\n");
+            textArea.setCaretPosition(textArea.getDocument().getLength());
+        }
+        else if (type == ActionType.MESG) {
+            textArea.append(s + "\n");
+            textArea.setCaretPosition(textArea.getDocument().getLength());
         }
         else if (type == ActionType.STGM) {
-            textArea.setText(type.toString() + " " + s + "\n");
+            textArea.setText("Activities:\n" + "Game has started.\n");
             cardLayout.next(cards);
+            try {
+                resetAnswerChoose();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         else if (type == ActionType.QUES) {
             labelQuestion.setText(s);

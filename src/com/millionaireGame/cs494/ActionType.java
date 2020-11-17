@@ -6,6 +6,7 @@ public enum ActionType {
     CLID("CLID"),
     DISS("DISS"),
     CONN("CONN"),
+    DBCN("DBCN"), // Database connected
     CLCN("CLCN"),
     CLDN("CLDN"), // Client Disconnect
     ERRO("ERRO"),
