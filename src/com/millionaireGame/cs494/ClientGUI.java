@@ -12,6 +12,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.security.Policy;
 
 public class ClientGUI implements Runnable{
     public final JFrame frame = new JFrame("Millionaire - Client | Connecting...");
@@ -36,10 +37,13 @@ public class ClientGUI implements Runnable{
     private JButton labelAnsB = new JButton("");
     private JButton labelAnsC = new JButton("");
     private JButton labelAnsD = new JButton("");
-    private JLabel labelA = new JLabel("                       A: ", SwingConstants.LEADING);
-    private JLabel labelB = new JLabel("       B: ", SwingConstants.LEADING);
-    private JLabel labelC = new JLabel("                       C: ", SwingConstants.LEADING);
-    private JLabel labelD = new JLabel("       D: ", SwingConstants.LEADING);
+    private JLabel labelA = new JLabel("                       A:", SwingConstants.LEADING);
+    private JLabel labelB = new JLabel("       B:", SwingConstants.LEADING);
+    private JLabel labelC = new JLabel("                       C:", SwingConstants.LEADING);
+    private JLabel labelD = new JLabel("       D:", SwingConstants.LEADING);
+    private JPanel panelInformation = new JPanel(new BorderLayout());
+    private JLabel labelAnnounce = new JLabel("...", SwingConstants.CENTER);
+    private JScrollPane scrollPane;
 
     File font_file = new File("fonts/BebasNeue-Regular.ttf");
     Font font = Font.createFont(Font.TRUETYPE_FONT, font_file);
@@ -137,12 +141,12 @@ public class ClientGUI implements Runnable{
     private void setupPanelPlay() throws IOException {
         BufferedImage myImage = ImageIO.read(new File("resource/background_play.png"));
         textArea.setOpaque(false);
-        textArea.setFont(font.deriveFont(36f));
+        textArea.setFont(font.deriveFont(24f));
         textArea.setForeground(Color.white);
         textArea.setText("");
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
-        textArea.setVisible(false);
+        textArea.setVisible(true);
         panelPlay = new ImagePanel(myImage);
         panelPlay.setLayout(new GridLayout(2,1,0,0));
         DefaultCaret caret = (DefaultCaret) textArea.getCaret();
@@ -205,7 +209,7 @@ public class ClientGUI implements Runnable{
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0,0,0,0);
         panelQuestionAnswers.add(panelAnsD, gbc);
-        panelPlay.add(textArea);
+        panelPlay.add(panelInformation);
         panelPlay.add(panelQuestionAnswers);
 
         labelQuestion.setForeground(Color.white);
@@ -213,6 +217,9 @@ public class ClientGUI implements Runnable{
         labelQuestion.setOpaque(false);
         labelQuestion.setEditable(false);
         labelQuestion.setHighlighter(null);
+        labelQuestion.setPreferredSize(new Dimension(960, 96));
+        labelQuestion.setMaximumSize(new Dimension(960, 96));
+        labelQuestion.setMinimumSize(new Dimension(960, 96));
         StyledDocument doc = labelQuestion.getStyledDocument();
         SimpleAttributeSet center = new SimpleAttributeSet();
         StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
@@ -220,10 +227,14 @@ public class ClientGUI implements Runnable{
         doc.setParagraphAttributes(0, doc.getLength(), center, false);
         panelQuestion.add(labelQuestion);
 
+        final Dimension ansDimen = new Dimension(480, 57);
         panelAnsA.setLayout(new FlowLayout(FlowLayout.LEADING));
+        panelAnsA.setPreferredSize(ansDimen);
+        panelAnsA.setMaximumSize(ansDimen);
+        panelAnsA.setMinimumSize(ansDimen);
         labelA.setFont(font.deriveFont(36f));
         labelA.setForeground(Color.decode("#FFE600"));
-        labelAnsA.setFont(font.deriveFont(32f));
+        labelAnsA.setFont(font.deriveFont(28f));
         labelAnsA.setForeground(Color.white);
         labelAnsA.setOpaque(false);
         labelAnsA.setBorder(null);
@@ -233,9 +244,12 @@ public class ClientGUI implements Runnable{
         panelAnsA.add(labelAnsA);
 
         panelAnsB.setLayout(new FlowLayout(FlowLayout.LEADING));
+        panelAnsB.setPreferredSize(ansDimen);
+        panelAnsB.setMaximumSize(ansDimen);
+        panelAnsB.setMinimumSize(ansDimen);
         labelB.setFont(font.deriveFont(36f));
         labelB.setForeground(Color.decode("#FFE600"));
-        labelAnsB.setFont(font.deriveFont(32f));
+        labelAnsB.setFont(font.deriveFont(28f));
         labelAnsB.setForeground(Color.white);
         labelAnsB.setOpaque(false);
         labelAnsB.setBorder(null);
@@ -245,9 +259,12 @@ public class ClientGUI implements Runnable{
         panelAnsB.add(labelAnsB);
 
         panelAnsC.setLayout(new FlowLayout(FlowLayout.LEADING));
+        panelAnsC.setPreferredSize(ansDimen);
+        panelAnsC.setMaximumSize(ansDimen);
+        panelAnsC.setMinimumSize(ansDimen);
         labelC.setFont(font.deriveFont(36f));
         labelC.setForeground(Color.decode("#FFE600"));
-        labelAnsC.setFont(font.deriveFont(32f));
+        labelAnsC.setFont(font.deriveFont(28f));
         labelAnsC.setForeground(Color.white);
         labelAnsC.setOpaque(false);
         labelAnsC.setBorder(null);
@@ -257,9 +274,12 @@ public class ClientGUI implements Runnable{
         panelAnsC.add(labelAnsC);
 
         panelAnsD.setLayout(new FlowLayout(FlowLayout.LEADING));
+        panelAnsD.setPreferredSize(ansDimen);
+        panelAnsD.setMaximumSize(ansDimen);
+        panelAnsD.setMinimumSize(ansDimen);
         labelD.setFont(font.deriveFont(36f));
         labelD.setForeground(Color.decode("#FFE600"));
-        labelAnsD.setFont(font.deriveFont(32f));
+        labelAnsD.setFont(font.deriveFont(28f));
         labelAnsD.setForeground(Color.white);
         labelAnsD.setOpaque(false);
         labelAnsD.setBorder(null);
@@ -267,6 +287,21 @@ public class ClientGUI implements Runnable{
         labelAnsD.setContentAreaFilled(false);
         panelAnsD.add(labelD);
         panelAnsD.add(labelAnsD);
+
+        labelAnnounce.setFont(font.deriveFont(32f));
+        labelAnnounce.setForeground(Color.white);
+        labelAnnounce.setText("It's your turn");
+        panelInformation.setOpaque(false);
+        panelInformation.add(labelAnnounce, BorderLayout.PAGE_END);
+
+        scrollPane = new JScrollPane(textArea);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.getHorizontalScrollBar().setOpaque(false);
+        scrollPane.getVerticalScrollBar().setOpaque(false);
+        scrollPane.setBorder(new EmptyBorder(10,10,10,10));
+        scrollPane.setPreferredSize(new Dimension(300,120));
+        panelInformation.add(scrollPane, BorderLayout.LINE_END);
     }
 
     @Override
@@ -276,6 +311,7 @@ public class ClientGUI implements Runnable{
 
     public void display(final ActionType type, final String s) {
         textArea.append(type.toString() + " " + s + "\n");
+        textArea.setCaretPosition(textArea.getDocument().getLength());
         if (type == ActionType.ERRO) {
             tf.setText(s);
             tf.setForeground(Color.red);
