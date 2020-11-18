@@ -17,7 +17,10 @@ public enum ActionType {
     ANSC("ANSC"),
     ANSD("ANSD"),
     QUES("QUES"),
-    TANS("TANS");
+    TANS("TANS"),// True answer
+    ALAN("ALAN"), // Allow client to answer, it's client turn.
+    CLAN("CLAN"), // Client answered
+    NXQT("NXQT"); // Next question
 
     private String type;
 

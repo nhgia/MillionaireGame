@@ -10,10 +10,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.*;
 
 public class ServerMain implements Runnable {
@@ -32,6 +30,7 @@ public class ServerMain implements Runnable {
 
     private String dataJSON = new String((Files.readAllBytes(Paths.get("resource/data.json"))));
     private JSONArray questions;
+    private JSONArray questionSet;
 
     public ServerMain() throws IOException, FontFormatException {
         actionSendMessage = this::actionSendMessageToClients;
@@ -74,7 +73,7 @@ public class ServerMain implements Runnable {
                 ClientController clientThread = new ClientController(socket, this);
                 clients.add(clientThread);
                 pool.execute(clientThread);
-
+                clientThread.setConnectStatus(true);
                 clientThread.actionSendToClient(ActionType.CLID, String.valueOf(numberOfClients));
             }
         } catch (Exception e) {
@@ -84,35 +83,43 @@ public class ServerMain implements Runnable {
     }
 
     public void actionDisconnectClient(int clientId, String name, Exception e) {
+        clients.get(clientId - 1).setConnectStatus(false);
         frontend.playersName.removeElement("#" + clientId + ": " + name);
         e.printStackTrace(System.err);
 
     }
 
     void actionSendMessageToClients(ActionType type, String s) {
-        frontend.display(type, s);
-        if (type == ActionType.STGM) {
-            //loop for 0 to length JSONArray
-            //violate
-            if (frontend.playersName.getSize() < 2) {
-                frontend.display(ActionType.ERRO, "You need 2 or more connected players to start.");
-            }
-            else {
-                JSONObject question = (JSONObject) getRandomQuestionSet(questions, 10 * numberOfClients).get(0);
-                for (ClientController client : clients) {
-                    client.actionSendToClient(type, s);
-                    client.actionSendToClient(ActionType.QUES, (String) question.get("question"));
-                    client.actionSendToClient(ActionType.ANSA, (String) question.get("A"));
-                    client.actionSendToClient(ActionType.ANSB, (String) question.get("B"));
-                    client.actionSendToClient(ActionType.ANSC, (String) question.get("C"));
-                    client.actionSendToClient(ActionType.ANSD, (String) question.get("D"));
-                };
-            };
-        }
-        else {
+        switch (type) {
+        case STGM:
+            questionSet = getRandomQuestionSet(questions, 5);
             for (ClientController client : clients) {
                 client.actionSendToClient(type, s);
-            }
+            };
+            break;
+        case NXQT:
+            JSONObject question = (JSONObject) questionSet.get(0);
+            frontend.display(ActionType.QUES, (String) question.get("question"));
+            frontend.display(ActionType.ANSA, (String) question.get("A"));
+            frontend.display(ActionType.ANSB, (String) question.get("B"));
+            frontend.display(ActionType.ANSC, (String) question.get("C"));
+            frontend.display(ActionType.ANSD, (String) question.get("D"));
+            frontend.display(ActionType.TANS, (String) question.get("answer"));
+            frontend.display(ActionType.ALAN, "#");
+            for (ClientController client : clients) {
+                client.actionSendToClient(ActionType.QUES, (String) question.get("question"));
+                client.actionSendToClient(ActionType.ANSA, (String) question.get("A"));
+                client.actionSendToClient(ActionType.ANSB, (String) question.get("B"));
+                client.actionSendToClient(ActionType.ANSC, (String) question.get("C"));
+                client.actionSendToClient(ActionType.ANSD, (String) question.get("D"));
+            };
+            break;
+        default:
+            frontend.display(type, s);
+            for (ClientController client : clients) {
+                client.actionSendToClient(type, s);
+            };
+            break;
         }
     }
 
@@ -137,6 +144,8 @@ public class ServerMain implements Runnable {
                 clients.get(clientID - 1).setName(message);
                 frontend.playersName.addElement("#" + clientID + ": " + message);
                 break;
+            default:
+                frontend.display(type, message);
         }
 
     }

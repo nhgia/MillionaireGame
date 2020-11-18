@@ -12,7 +12,6 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.security.Policy;
 
 public class ClientGUI implements Runnable{
     public final JFrame frame = new JFrame("Millionaire - Client | Connecting...");
@@ -49,7 +48,7 @@ public class ClientGUI implements Runnable{
     Font font = Font.createFont(Font.TRUETYPE_FONT, font_file);
 
     public MessageToSend actionSendMessage;
-    public boolean isNotChooseAnswer = true;
+    public boolean isNotChooseAnswer = false;
 
     public ClientGUI(MessageToSend closure) throws IOException, FontFormatException {
         this.actionSendMessage = closure;
@@ -214,6 +213,7 @@ public class ClientGUI implements Runnable{
         panelPlay.add(panelQuestionAnswers);
 
         labelQuestion.setForeground(Color.white);
+        labelQuestion.setText("");
         labelQuestion.setBorder(new EmptyBorder(8,142,8,142));
         labelQuestion.setOpaque(false);
         labelQuestion.setEditable(false);
@@ -295,7 +295,7 @@ public class ClientGUI implements Runnable{
 
         labelAnnounce.setFont(font.deriveFont(32f));
         labelAnnounce.setForeground(Color.white);
-        labelAnnounce.setText("It's your turn");
+        labelAnnounce.setText("Waiting for host...");
         panelInformation.setOpaque(false);
         panelInformation.add(labelAnnounce, BorderLayout.PAGE_END);
 
@@ -315,6 +315,7 @@ public class ClientGUI implements Runnable{
                     isNotChooseAnswer = false;
                     try {
                         panelAnsA.setImage(ImageIO.read(new File("resource/background_answer_chosen.png")));
+                        actionSendMessage.mess(ActionType.CLAN, "A");
                     } catch (IOException ioException) {
                         ioException.printStackTrace();
                     }
@@ -328,6 +329,7 @@ public class ClientGUI implements Runnable{
                     isNotChooseAnswer = false;
                     try {
                         panelAnsB.setImage(ImageIO.read(new File("resource/background_answer_right_chosen.png")));
+                        actionSendMessage.mess(ActionType.CLAN, "B");
                     } catch (IOException ioException) {
                         ioException.printStackTrace();
                     }
@@ -341,6 +343,7 @@ public class ClientGUI implements Runnable{
                     isNotChooseAnswer = false;
                     try {
                         panelAnsC.setImage(ImageIO.read(new File("resource/background_answer_chosen.png")));
+                        actionSendMessage.mess(ActionType.CLAN, "C");
                     } catch (IOException ioException) {
                         ioException.printStackTrace();
                     }
@@ -354,6 +357,7 @@ public class ClientGUI implements Runnable{
                     isNotChooseAnswer = false;
                     try {
                         panelAnsD.setImage(ImageIO.read(new File("resource/background_answer_right_chosen.png")));
+                        actionSendMessage.mess(ActionType.CLAN, "D");
                     } catch (IOException ioException) {
                         ioException.printStackTrace();
                     }
@@ -363,7 +367,6 @@ public class ClientGUI implements Runnable{
     }
 
     private void resetAnswerChoose() throws IOException {
-        isNotChooseAnswer = true;
         panelAnsA.setImage(ImageIO.read(new File("resource/background_answer.png")));
         panelAnsB.setImage(ImageIO.read(new File("resource/background_answer_right.png")));
         panelAnsC.setImage(ImageIO.read(new File("resource/background_answer.png")));
@@ -392,6 +395,7 @@ public class ClientGUI implements Runnable{
         else if (type == ActionType.STGM) {
             textArea.setText("Activities:\n" + "Game has started.\n");
             cardLayout.next(cards);
+            isNotChooseAnswer = true;
             try {
                 resetAnswerChoose();
             } catch (IOException e) {
@@ -412,6 +416,10 @@ public class ClientGUI implements Runnable{
         }
         else if (type == ActionType.ANSD) {
             labelAnsD.setText(s);
+        }
+        else if (type == ActionType.ALAN) {
+            isNotChooseAnswer = true;
+            labelAnnounce.setText(s);
         }
     }
 

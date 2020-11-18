@@ -13,6 +13,7 @@ public class ClientController implements Runnable {
 
     private int clientId;
     private String clientName;
+    private boolean isConnected = false;
 
     public ClientController(Socket clientSocket, ServerMain server) throws IOException {
         this.client = clientSocket;
@@ -52,5 +53,13 @@ public class ClientController implements Runnable {
 
     public void setName(String str) {
         clientName = str;
+    }
+
+    public void setConnectStatus(boolean value) {
+        isConnected = value;
+    }
+
+    public boolean getConnectStatus() {
+        return this.isConnected;
     }
 }
