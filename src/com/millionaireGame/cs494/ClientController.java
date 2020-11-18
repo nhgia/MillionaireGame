@@ -14,6 +14,7 @@ public class ClientController implements Runnable {
     private int clientId;
     private String clientName;
     private boolean isConnected = false;
+    private boolean isLost = false;
 
     public ClientController(Socket clientSocket, ServerMain server) throws IOException {
         this.client = clientSocket;
@@ -47,19 +48,15 @@ public class ClientController implements Runnable {
         }
     }
 
-    public void setId(String str) {
-        clientId = Integer.parseInt(str);
-    }
+    public void setId(String str) { clientId = Integer.parseInt(str); }
 
-    public void setName(String str) {
-        clientName = str;
-    }
+    public void setName(String str) { clientName = str; }
 
-    public void setConnectStatus(boolean value) {
-        isConnected = value;
-    }
+    public void setConnectStatus(boolean value) { isConnected = value; }
 
-    public boolean getConnectStatus() {
-        return this.isConnected;
-    }
+    public void setLost(boolean value) { this.isLost = value; }
+
+    public boolean getConnectStatus() { return this.isConnected; }
+
+    public boolean getLostStatus() { return this.isLost; }
 }

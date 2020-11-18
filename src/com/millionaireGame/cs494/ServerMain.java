@@ -31,6 +31,9 @@ public class ServerMain implements Runnable {
     private String dataJSON = new String((Files.readAllBytes(Paths.get("resource/data.json"))));
     private JSONArray questions;
     private JSONArray questionSet;
+    private int currentQuestionIndex = -1;
+    private int numberOfConnectedClient = 0;
+    private int currentClientIndex = 0;
 
     public ServerMain() throws IOException, FontFormatException {
         actionSendMessage = this::actionSendMessageToClients;
@@ -91,35 +94,45 @@ public class ServerMain implements Runnable {
 
     void actionSendMessageToClients(ActionType type, String s) {
         switch (type) {
-        case STGM:
-            questionSet = getRandomQuestionSet(questions, 5);
-            for (ClientController client : clients) {
-                client.actionSendToClient(type, s);
-            };
-            break;
-        case NXQT:
-            JSONObject question = (JSONObject) questionSet.get(0);
-            frontend.display(ActionType.QUES, (String) question.get("question"));
-            frontend.display(ActionType.ANSA, (String) question.get("A"));
-            frontend.display(ActionType.ANSB, (String) question.get("B"));
-            frontend.display(ActionType.ANSC, (String) question.get("C"));
-            frontend.display(ActionType.ANSD, (String) question.get("D"));
-            frontend.display(ActionType.TANS, (String) question.get("answer"));
-            frontend.display(ActionType.ALAN, "#");
-            for (ClientController client : clients) {
-                client.actionSendToClient(ActionType.QUES, (String) question.get("question"));
-                client.actionSendToClient(ActionType.ANSA, (String) question.get("A"));
-                client.actionSendToClient(ActionType.ANSB, (String) question.get("B"));
-                client.actionSendToClient(ActionType.ANSC, (String) question.get("C"));
-                client.actionSendToClient(ActionType.ANSD, (String) question.get("D"));
-            };
-            break;
-        default:
-            frontend.display(type, s);
-            for (ClientController client : clients) {
-                client.actionSendToClient(type, s);
-            };
-            break;
+            case STGM:
+                numberOfConnectedClient = 0;
+                for (ClientController client: clients) {
+                    if (client.getConnectStatus()) {
+                        numberOfConnectedClient++;
+                    }
+                }
+                questionSet = getRandomQuestionSet(questions, 5 * numberOfConnectedClient);
+                for (ClientController client : clients) {
+                    client.actionSendToClient(type, s);
+                };
+                break;
+            case NXQT:
+                currentQuestionIndex++;
+                if (currentQuestionIndex >= 5 * numberOfConnectedClient) break;
+                JSONObject question = (JSONObject) questionSet.get(currentQuestionIndex);
+                frontend.display(ActionType.QUES, (String) question.get("question"));
+                frontend.display(ActionType.ANSA, (String) question.get("A"));
+                frontend.display(ActionType.ANSB, (String) question.get("B"));
+                frontend.display(ActionType.ANSC, (String) question.get("C"));
+                frontend.display(ActionType.ANSD, (String) question.get("D"));
+                frontend.display(ActionType.TANS, (String) question.get("answer"));
+                frontend.display(ActionType.ALAN, "#");
+                for (ClientController client : clients) {
+                    client.actionSendToClient(ActionType.QUES, (String) question.get("question"));
+                    client.actionSendToClient(ActionType.ANSA, (String) question.get("A"));
+                    client.actionSendToClient(ActionType.ANSB, (String) question.get("B"));
+                    client.actionSendToClient(ActionType.ANSC, (String) question.get("C"));
+                    client.actionSendToClient(ActionType.ANSD, (String) question.get("D"));
+                };
+                break;
+            case LOST:
+                break;
+            default:
+                frontend.display(type, s);
+                for (ClientController client : clients) {
+                    client.actionSendToClient(type, s);
+                };
+                break;
         }
     }
 

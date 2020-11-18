@@ -430,6 +430,7 @@ public class ServerGUI implements Runnable {
                         }
                         break;
                 }
+                actionSendMessage.mess(ActionType.TANS, trueAnswer);
             }
         });
     }
@@ -511,6 +512,9 @@ public class ServerGUI implements Runnable {
                             ioException.printStackTrace();
                         }
                         break;
+                }
+                if (!mess.equals(trueAnswer)) {
+                    actionSendMessage.mess(ActionType.LOST, "");
                 }
                 break;
         }

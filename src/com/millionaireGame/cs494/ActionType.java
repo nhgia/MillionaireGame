@@ -20,7 +20,8 @@ public enum ActionType {
     TANS("TANS"),// True answer
     ALAN("ALAN"), // Allow client to answer, it's client turn.
     CLAN("CLAN"), // Client answered
-    NXQT("NXQT"); // Next question
+    NXQT("NXQT"), // Next question
+    LOST("LOST"); // Client is lost, wrong answer.
 
     private String type;
 

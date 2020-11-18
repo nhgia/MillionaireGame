@@ -373,6 +373,23 @@ public class ClientGUI implements Runnable{
         panelAnsD.setImage(ImageIO.read(new File("resource/background_answer_right.png")));
     }
 
+    private void correctAnswer(String trueAns) throws IOException {
+        switch (trueAns) {
+            case "A":
+                panelAnsA.setImage(ImageIO.read(new File("resource/background_answer_correct.png")));
+                break;
+            case "B":
+                panelAnsB.setImage(ImageIO.read(new File("resource/background_answer_right_correct.png")));
+                break;
+            case "C":
+                panelAnsC.setImage(ImageIO.read(new File("resource/background_answer_correct.png")));
+                break;
+            case "D":
+                panelAnsD.setImage(ImageIO.read(new File("resource/background_answer_right_correct.png")));
+                break;
+        }
+    }
+
     @Override
     public void run() {
         frame.setVisible(true);
@@ -395,14 +412,14 @@ public class ClientGUI implements Runnable{
         else if (type == ActionType.STGM) {
             textArea.setText("Activities:\n" + "Game has started.\n");
             cardLayout.next(cards);
-            isNotChooseAnswer = true;
+        }
+        else if (type == ActionType.QUES) {
             try {
+                isNotChooseAnswer = true; // tmp
                 resetAnswerChoose();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        else if (type == ActionType.QUES) {
             labelQuestion.setText(s);
         }
         else if (type == ActionType.ANSA) {
@@ -420,6 +437,13 @@ public class ClientGUI implements Runnable{
         else if (type == ActionType.ALAN) {
             isNotChooseAnswer = true;
             labelAnnounce.setText(s);
+        }
+        else if (type == ActionType.TANS) {
+            try {
+                correctAnswer(s);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
