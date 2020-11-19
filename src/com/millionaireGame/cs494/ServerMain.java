@@ -34,6 +34,7 @@ public class ServerMain implements Runnable {
     private int currentQuestionIndex = -1;
     private int numberOfConnectedClient = 0;
     private int currentClientIndex = 0;
+    private int playersRemaining = 0;
 
     public ServerMain() throws IOException, FontFormatException {
         actionSendMessage = this::actionSendMessageToClients;
@@ -101,6 +102,7 @@ public class ServerMain implements Runnable {
                         numberOfConnectedClient++;
                     }
                 }
+                playersRemaining = numberOfConnectedClient;
                 questionSet = getRandomQuestionSet(questions, 5 * numberOfConnectedClient);
                 for (ClientController client : clients) {
                     client.actionSendToClient(type, s);
@@ -108,7 +110,46 @@ public class ServerMain implements Runnable {
                 break;
             case NXQT:
                 currentQuestionIndex++;
-                if (currentQuestionIndex >= 5 * numberOfConnectedClient) break;
+                boolean validate = false;
+                currentClientIndex++;
+                for (int i = currentClientIndex; i < clients.size(); i++) {
+                    if (!clients.get(i).getLostStatus() && clients.get(i).getConnectStatus()) {
+                        currentClientIndex = i;
+                        validate = true;
+                        break;
+                    }
+                }
+                if (!validate) {
+                    currentClientIndex = 0;
+                    for (int i = currentClientIndex; i < clients.size(); i++) {
+                        if (!clients.get(i).getLostStatus() && clients.get(i).getConnectStatus()) {
+                            currentClientIndex = i;
+                            break;
+                        }
+                    }
+                };
+                if (currentQuestionIndex >= 5 * numberOfConnectedClient || playersRemaining < 2) {
+                    frontend.display(ActionType.FINI, "We have winner(s).");
+                    frontend.display(ActionType.QUES, "");
+                    frontend.display(ActionType.ANSA, "");
+                    frontend.display(ActionType.ANSB, "");
+                    frontend.display(ActionType.ANSC, "");
+                    frontend.display(ActionType.ANSD, "");
+                    for (ClientController client: clients) {
+                        if (!client.getLostStatus() && client.getConnectStatus()) {
+                            client.actionSendToClient(ActionType.FINI, "You are the winner!");
+                        }
+                        else {
+                            client.actionSendToClient(ActionType.FINI, "You have lost. Try again!");
+                        }
+                        client.actionSendToClient(ActionType.QUES, "");
+                        client.actionSendToClient(ActionType.ANSA, "");
+                        client.actionSendToClient(ActionType.ANSB, "");
+                        client.actionSendToClient(ActionType.ANSC, "");
+                        client.actionSendToClient(ActionType.ANSD, "");
+                    };
+                    break;
+                }
                 JSONObject question = (JSONObject) questionSet.get(currentQuestionIndex);
                 frontend.display(ActionType.QUES, (String) question.get("question"));
                 frontend.display(ActionType.ANSA, (String) question.get("A"));
@@ -116,8 +157,15 @@ public class ServerMain implements Runnable {
                 frontend.display(ActionType.ANSC, (String) question.get("C"));
                 frontend.display(ActionType.ANSD, (String) question.get("D"));
                 frontend.display(ActionType.TANS, (String) question.get("answer"));
-                frontend.display(ActionType.ALAN, "#");
+                frontend.display(ActionType.ALAN, String.valueOf(clients.get(currentClientIndex).getId()));
                 for (ClientController client : clients) {
+                    if (client.getId() == currentClientIndex + 1) {
+                        client.actionSendToClient(ActionType.ALAN, "It's your turn to answer");
+                    }
+                    else {
+                        client.actionSendToClient(ActionType.CORR,
+                                "Player " + clients.get(currentClientIndex).getName() + "'s turn. Please wait.");
+                    }
                     client.actionSendToClient(ActionType.QUES, (String) question.get("question"));
                     client.actionSendToClient(ActionType.ANSA, (String) question.get("A"));
                     client.actionSendToClient(ActionType.ANSB, (String) question.get("B"));
@@ -126,6 +174,31 @@ public class ServerMain implements Runnable {
                 };
                 break;
             case LOST:
+            case TANS:
+                frontend.display(type, s);
+                for (ClientController client : clients) {
+                    client.actionSendToClient(type, s);
+                    if (client.getId() == currentClientIndex + 1) {
+                        if (client.getLostStatus()) {
+                            client.actionSendToClient(ActionType.LOST, "Wrong answer! Better luck " +
+                                    "next time.");
+                            frontend.playersPlayingModel.removeElement("#" + client.getId() + ": " + client.getName());
+                        }
+                        else {
+                            client.actionSendToClient(ActionType.CORR, "Correct answer.");
+                        }
+                    }
+                    else {
+                        if (clients.get(currentClientIndex).getLostStatus()) {
+                            client.actionSendToClient(ActionType.CORR, clients.get(currentClientIndex).getName() + " " +
+                                    "got wrong answer.");
+                        }
+                        else {
+                            client.actionSendToClient(ActionType.CORR, "");
+                        }
+                    }
+                    client.actionSendToClient(ActionType.MESG, playersRemaining + " player(s) remaining.");
+                };
                 break;
             default:
                 frontend.display(type, s);
@@ -156,6 +229,16 @@ public class ServerMain implements Runnable {
             case NAME:
                 clients.get(clientID - 1).setName(message);
                 frontend.playersName.addElement("#" + clientID + ": " + message);
+                frontend.playersPlayingModel.addElement("#" + clientID + ": " + message);
+                break;
+            case CLAN:
+                JSONObject question = (JSONObject) questionSet.get(currentQuestionIndex);
+                String ans = (String) question.get("answer");
+                if (!message.equals(ans)) {
+                    clients.get(currentClientIndex).setLost(true);
+                    playersRemaining--;
+                }
+                frontend.display(type, message);
                 break;
             default:
                 frontend.display(type, message);

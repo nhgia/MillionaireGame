@@ -415,7 +415,6 @@ public class ClientGUI implements Runnable{
         }
         else if (type == ActionType.QUES) {
             try {
-                isNotChooseAnswer = true; // tmp
                 resetAnswerChoose();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -437,6 +436,8 @@ public class ClientGUI implements Runnable{
         else if (type == ActionType.ALAN) {
             isNotChooseAnswer = true;
             labelAnnounce.setText(s);
+            textArea.append(s + "\n");
+            textArea.setCaretPosition(textArea.getDocument().getLength());
         }
         else if (type == ActionType.TANS) {
             try {
@@ -444,6 +445,17 @@ public class ClientGUI implements Runnable{
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+        else if (type == ActionType.CORR || type == ActionType.LOST) {
+            labelAnnounce.setText(s);
+            textArea.append(s + "\n");
+            textArea.setCaretPosition(textArea.getDocument().getLength());
+        }
+        else if (type == ActionType.FINI) {
+            labelAnnounce.setText(s);
+            labelAnnounce.setForeground(Color.GREEN);
+            textArea.append(s + "\n");
+            textArea.setCaretPosition(textArea.getDocument().getLength());
         }
     }
 

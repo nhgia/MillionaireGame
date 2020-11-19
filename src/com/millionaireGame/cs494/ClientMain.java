@@ -88,6 +88,10 @@ public class ClientMain implements Runnable {
             case ANSC:
             case ANSD:
             case TANS:
+            case ALAN:
+            case LOST:
+            case CORR:
+            case FINI:
                 frontend.display(type, message);
                 break;
             case ERRO:

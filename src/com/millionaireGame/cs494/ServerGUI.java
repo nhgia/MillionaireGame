@@ -55,6 +55,8 @@ public class ServerGUI implements Runnable {
     private JLabel labelAnnounce = new JLabel("...", SwingConstants.CENTER);
     private JButton buttonNext = new JButton("Next >");
     private JButton buttonCheckAnswer = new JButton("Check answer");
+    private JScrollPane scrollPanePlayersPlaying;
+    private JList playersPlaying;
 
     File font_file = new File("fonts/BebasNeue-Regular.ttf");
     Font font = Font.createFont(Font.TRUETYPE_FONT, font_file);
@@ -65,6 +67,7 @@ public class ServerGUI implements Runnable {
     public String[] modeSets = {"Normal"};
     public String[] timeSets = {"20 seconds"};
     public DefaultListModel playersName = new DefaultListModel();
+    public DefaultListModel playersPlayingModel = new DefaultListModel();
     private String trueAnswer = "";
 
     public ServerGUI(MessageToSend closure) throws IOException, FontFormatException {
@@ -374,6 +377,15 @@ public class ServerGUI implements Runnable {
         panelNext.add(buttonNext);
         panelNext.add(labelAnnounce);
 
+        playersPlaying = new JList(playersPlayingModel);
+        playersPlaying.setFont(font.deriveFont(30f));
+        playersPlaying.setOpaque(false);
+        playersPlaying.setDragEnabled(false);
+        playersPlaying.setEnabled(false);
+        playersPlaying.setBorder(new EmptyBorder(0,10,0,10));
+        scrollPanePlayersPlaying = new JScrollPane(playersPlaying);
+        scrollPanePlayersPlaying.setOpaque(false);
+        panelInformation.add(scrollPanePlayersPlaying);
         panelPlay.add(panelInformation);
 
         buttonNext.addActionListener(new ActionListener() {
@@ -513,9 +525,9 @@ public class ServerGUI implements Runnable {
                         }
                         break;
                 }
-                if (!mess.equals(trueAnswer)) {
-                    actionSendMessage.mess(ActionType.LOST, "");
-                }
+                break;
+            case FINI:
+                labelAnnounce.setText(mess);
                 break;
         }
     }

@@ -21,7 +21,9 @@ public enum ActionType {
     ALAN("ALAN"), // Allow client to answer, it's client turn.
     CLAN("CLAN"), // Client answered
     NXQT("NXQT"), // Next question
-    LOST("LOST"); // Client is lost, wrong answer.
+    LOST("LOST"), // Client is lost, wrong answer.
+    CORR("CORR"), // Announce for client that answer is correct.
+    FINI("FINI"); // Game is finished
 
     private String type;
 

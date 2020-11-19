@@ -56,6 +56,10 @@ public class ClientController implements Runnable {
 
     public void setLost(boolean value) { this.isLost = value; }
 
+    public int getId() { return this.clientId; }
+
+    public String getName() { return this.clientName; }
+
     public boolean getConnectStatus() { return this.isConnected; }
 
     public boolean getLostStatus() { return this.isLost; }
