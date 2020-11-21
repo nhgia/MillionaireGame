@@ -103,7 +103,7 @@ public class ServerMain implements Runnable {
                     }
                 }
                 playersRemaining = numberOfConnectedClient;
-                questionSet = getRandomQuestionSet(questions, 5);
+                questionSet = getRandomQuestionSet(questions, 5 * numberOfConnectedClient);
                 for (ClientController client : clients) {
                     client.actionSendToClient(type, s);
                 };

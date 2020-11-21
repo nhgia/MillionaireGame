@@ -210,7 +210,7 @@ public class ServerGUI implements Runnable {
         buttonStart.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (false) {
+                if (playersName.getSize() < 2) {
                     JOptionPane.showMessageDialog(frame, "You need 2 or more connected players to start.","Server - Warning",
                             JOptionPane.WARNING_MESSAGE);
                 }
