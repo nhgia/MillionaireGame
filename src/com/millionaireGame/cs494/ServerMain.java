@@ -103,7 +103,7 @@ public class ServerMain implements Runnable {
                     }
                 }
                 playersRemaining = numberOfConnectedClient;
-                questionSet = getRandomQuestionSet(questions, 5 * numberOfConnectedClient);
+                questionSet = getRandomQuestionSet(questions, 5);
                 for (ClientController client : clients) {
                     client.actionSendToClient(type, s);
                 };
@@ -180,7 +180,7 @@ public class ServerMain implements Runnable {
                     client.actionSendToClient(type, s);
                     if (client.getId() == currentClientIndex + 1) {
                         if (client.getLostStatus()) {
-                            client.actionSendToClient(ActionType.LOST, "Wrong answer! Better luck " +
+                            client.actionSendToClient(ActionType.CORR, "Wrong answer! Better luck " +
                                     "next time.");
                             frontend.playersPlayingModel.removeElement("#" + client.getId() + ": " + client.getName());
                         }

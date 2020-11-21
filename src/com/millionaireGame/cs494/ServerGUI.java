@@ -55,6 +55,7 @@ public class ServerGUI implements Runnable {
     private JLabel labelAnnounce = new JLabel("...", SwingConstants.CENTER);
     private JButton buttonNext = new JButton("Next >");
     private JButton buttonCheckAnswer = new JButton("Check answer");
+    private JButton buttonBackToHome = new JButton("< Back to home");
     private JScrollPane scrollPanePlayersPlaying;
     private JList playersPlaying;
 
@@ -209,7 +210,7 @@ public class ServerGUI implements Runnable {
         buttonStart.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (playersName.getSize() < 2) {
+                if (false) {
                     JOptionPane.showMessageDialog(frame, "You need 2 or more connected players to start.","Server - Warning",
                             JOptionPane.WARNING_MESSAGE);
                 }
@@ -372,6 +373,7 @@ public class ServerGUI implements Runnable {
         panelInformation.add(panelNext, BorderLayout.PAGE_START);
         buttonNext.setFont(font.deriveFont(28f));
         buttonCheckAnswer.setFont(font.deriveFont(28f));
+        buttonBackToHome.setFont(font.deriveFont(28f));
         panelNext.setOpaque(false);
         panelNext.add(buttonCheckAnswer);
         panelNext.add(buttonNext);
@@ -382,10 +384,11 @@ public class ServerGUI implements Runnable {
         playersPlaying.setOpaque(false);
         playersPlaying.setDragEnabled(false);
         playersPlaying.setEnabled(false);
-        playersPlaying.setBorder(new EmptyBorder(0,10,0,10));
+        playersPlaying.setBorder(new EmptyBorder(0,10,20,10));
         scrollPanePlayersPlaying = new JScrollPane(playersPlaying);
         scrollPanePlayersPlaying.setOpaque(false);
-        panelInformation.add(scrollPanePlayersPlaying);
+        panelInformation.add(scrollPanePlayersPlaying, BorderLayout.CENTER);
+        panelInformation.add(buttonBackToHome, BorderLayout.PAGE_END);
         panelPlay.add(panelInformation);
 
         buttonNext.addActionListener(new ActionListener() {
@@ -443,6 +446,13 @@ public class ServerGUI implements Runnable {
                         break;
                 }
                 actionSendMessage.mess(ActionType.TANS, trueAnswer);
+            }
+        });
+
+        buttonBackToHome.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.previous(cards);
             }
         });
     }

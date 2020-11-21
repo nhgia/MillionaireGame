@@ -446,14 +446,14 @@ public class ClientGUI implements Runnable{
                 e.printStackTrace();
             }
         }
-        else if (type == ActionType.CORR || type == ActionType.LOST) {
+        else if (type == ActionType.CORR) {
             labelAnnounce.setText(s);
             textArea.append(s + "\n");
             textArea.setCaretPosition(textArea.getDocument().getLength());
         }
-        else if (type == ActionType.FINI) {
+        else if (type == ActionType.FINI || type == ActionType.LOST) {
             labelAnnounce.setText(s);
-            labelAnnounce.setForeground(Color.GREEN);
+            labelAnnounce.setForeground(type == ActionType.FINI ? Color.GREEN : Color.red);
             textArea.append(s + "\n");
             textArea.setCaretPosition(textArea.getDocument().getLength());
         }
