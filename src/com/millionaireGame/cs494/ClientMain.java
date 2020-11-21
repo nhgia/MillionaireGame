@@ -20,6 +20,8 @@ public class ClientMain implements Runnable {
     private Thread frontendThread;
     public MessageToSend actionSendMessage;
 
+    public Timer timer;
+
     public ClientMain() throws IOException, FontFormatException, ParseException {
 //        display(SERVER_IP + " on port " + PORT);
         thread = new Thread(this, "Trying");
@@ -107,5 +109,17 @@ public class ClientMain implements Runnable {
         if (out != null) {
             out.println(type.toString() + " " + s);
         }
+    }
+
+    public void TimeCountdown(){
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            int i = 30;
+            public void run() {
+                System.out.println(i--);
+                if (i< 0)
+                    timer.cancel();
+            }
+        }, 0, 1000);
     }
 }
