@@ -368,12 +368,14 @@ public class ServerGUI implements Runnable {
 
         labelAnnounce.setFont(font.deriveFont(32f));
         labelAnnounce.setForeground(Color.white);
-        labelAnnounce.setText("Press next to process to next question!");
+        labelAnnounce.setText("Press next for next question!");
         panelInformation.setOpaque(false);
         panelInformation.add(panelNext, BorderLayout.PAGE_START);
         buttonNext.setFont(font.deriveFont(28f));
         buttonCheckAnswer.setFont(font.deriveFont(28f));
         buttonBackToHome.setFont(font.deriveFont(28f));
+        buttonBackToHome.setVisible(true);
+        buttonBackToHome.setEnabled(false);
         panelNext.setOpaque(false);
         panelNext.add(buttonCheckAnswer);
         panelNext.add(buttonNext);
@@ -387,6 +389,7 @@ public class ServerGUI implements Runnable {
         playersPlaying.setBorder(new EmptyBorder(0,10,20,10));
         scrollPanePlayersPlaying = new JScrollPane(playersPlaying);
         scrollPanePlayersPlaying.setOpaque(false);
+        scrollPanePlayersPlaying.setPreferredSize(new Dimension(scrollPanePlayersPlaying.getWidth(), 148));
         panelInformation.add(scrollPanePlayersPlaying, BorderLayout.CENTER);
         panelInformation.add(buttonBackToHome, BorderLayout.PAGE_END);
         panelPlay.add(panelInformation);
@@ -453,6 +456,7 @@ public class ServerGUI implements Runnable {
             @Override
             public void actionPerformed(ActionEvent e) {
                 cardLayout.previous(cards);
+                actionSendMessage.mess(ActionType.BACK, "");
             }
         });
     }
@@ -481,6 +485,12 @@ public class ServerGUI implements Runnable {
             case DBCN:
                 labelDb.setText(mess);
                 labelDb.setForeground(new Color(0, 255, 71));
+                break;
+            case STGM:
+                labelAnnounce.setText("Press next for next question!");
+                buttonCheckAnswer.setEnabled(false);
+                buttonNext.setEnabled(true);
+                buttonBackToHome.setEnabled(false);
                 break;
             case QUES:
                 labelQuestion.setText(mess);
@@ -536,7 +546,12 @@ public class ServerGUI implements Runnable {
                         break;
                 }
                 break;
+            case TIOU:
+                buttonCheckAnswer.setEnabled(true);
+                labelAnnounce.setText(mess);
+                break;
             case FINI:
+                buttonBackToHome.setEnabled(true);
                 labelAnnounce.setText(mess);
                 break;
         }

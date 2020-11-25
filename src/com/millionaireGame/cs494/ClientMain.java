@@ -20,7 +20,7 @@ public class ClientMain implements Runnable {
     private Thread frontendThread;
     public MessageToSend actionSendMessage;
 
-    public Timer timer;
+    public static Timer timer;
 
     public ClientMain() throws IOException, FontFormatException, ParseException {
 //        display(SERVER_IP + " on port " + PORT);
@@ -90,11 +90,15 @@ public class ClientMain implements Runnable {
             case ANSC:
             case ANSD:
             case TANS:
-            case ALAN:
             case LOST:
             case CORR:
             case FINI:
+            case BACK:
                 frontend.display(type, message);
+                break;
+            case ALAN:
+                frontend.display(type, message);
+                timeCountDown();
                 break;
             case ERRO:
                 frontend.frame.setTitle("Millionaire - Client | " + message);
@@ -106,19 +110,28 @@ public class ClientMain implements Runnable {
         if (type == ActionType.NAME) {
             frontend.frame.setTitle("Millionaire - Client | Name: " + s + " | ID: " + clientId);
         }
+        else if (type == ActionType.CLAN) {
+            timer.cancel();
+        }
         if (out != null) {
             out.println(type.toString() + " " + s);
         }
     }
 
-    public void TimeCountdown(){
+    public void timeCountDown() {
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
-            int i = 30;
+            int i = 21;
             public void run() {
-                System.out.println(i--);
-                if (i< 0)
+                i--;
+                if (i< 0) {
                     timer.cancel();
+                    frontend.display(ActionType.TIOU, "Timed out!");
+                    actionSendMessageToServer(ActionType.TIOU, "");
+                }
+                else {
+                    frontend.display(ActionType.TIME, String.valueOf(i));
+                }
             }
         }, 0, 1000);
     }

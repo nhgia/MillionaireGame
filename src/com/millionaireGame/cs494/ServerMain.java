@@ -97,9 +97,12 @@ public class ServerMain implements Runnable {
         switch (type) {
             case STGM:
                 numberOfConnectedClient = 0;
+                frontend.playersPlayingModel.removeAllElements();
                 for (ClientController client: clients) {
+                    client.setLost(false);
                     if (client.getConnectStatus()) {
                         numberOfConnectedClient++;
+                        frontend.playersPlayingModel.addElement("#" + client.getId() + ": " + client.getName());
                     }
                 }
                 playersRemaining = numberOfConnectedClient;
@@ -107,6 +110,7 @@ public class ServerMain implements Runnable {
                 for (ClientController client : clients) {
                     client.actionSendToClient(type, s);
                 };
+                frontend.display(ActionType.STGM, "");
                 break;
             case NXQT:
                 currentQuestionIndex++;
@@ -140,7 +144,7 @@ public class ServerMain implements Runnable {
                             client.actionSendToClient(ActionType.FINI, "You are the winner!");
                         }
                         else {
-                            client.actionSendToClient(ActionType.FINI, "You have lost. Try again!");
+                            client.actionSendToClient(ActionType.LOST, "You have lost. Try again!");
                         }
                         client.actionSendToClient(ActionType.QUES, "");
                         client.actionSendToClient(ActionType.ANSA, "");
@@ -158,6 +162,7 @@ public class ServerMain implements Runnable {
                 frontend.display(ActionType.ANSD, (String) question.get("D"));
                 frontend.display(ActionType.TANS, (String) question.get("answer"));
                 frontend.display(ActionType.ALAN, String.valueOf(clients.get(currentClientIndex).getId()));
+                System.out.println("Answer " + question.get("answer"));
                 for (ClientController client : clients) {
                     if (client.getId() == currentClientIndex + 1) {
                         client.actionSendToClient(ActionType.ALAN, "It's your turn to answer");
@@ -229,7 +234,6 @@ public class ServerMain implements Runnable {
             case NAME:
                 clients.get(clientID - 1).setName(message);
                 frontend.playersName.addElement("#" + clientID + ": " + message);
-                frontend.playersPlayingModel.addElement("#" + clientID + ": " + message);
                 break;
             case CLAN:
                 JSONObject question = (JSONObject) questionSet.get(currentQuestionIndex);
@@ -239,6 +243,11 @@ public class ServerMain implements Runnable {
                     playersRemaining--;
                 }
                 frontend.display(type, message);
+                break;
+            case TIOU:
+                clients.get(currentClientIndex).setLost(true);
+                playersRemaining--;
+                frontend.display(type, "Client " + clients.get(currentClientIndex).getName() + " did not answer!");
                 break;
             default:
                 frontend.display(type, message);

@@ -7,6 +7,7 @@ import javax.swing.text.DefaultCaret;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+import javax.xml.datatype.Duration;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -43,6 +44,8 @@ public class ClientGUI implements Runnable{
     private JPanel panelInformation = new JPanel(new BorderLayout());
     private JLabel labelAnnounce = new JLabel("...", SwingConstants.CENTER);
     private JScrollPane scrollPane;
+    private JLabel labelTime = new JLabel("--", SwingConstants.CENTER);
+    private JProgressBar progressBar;
 
     File font_file = new File("fonts/BebasNeue-Regular.ttf");
     Font font = Font.createFont(Font.TRUETYPE_FONT, font_file);
@@ -307,7 +310,13 @@ public class ClientGUI implements Runnable{
         scrollPane.setBorder(new EmptyBorder(10,10,10,10));
         scrollPane.setPreferredSize(new Dimension(300,120));
         panelInformation.add(scrollPane, BorderLayout.LINE_END);
+        labelTime.setFont(font.deriveFont(100f));
+        labelTime.setForeground(Color.white);
+        labelTime.setBorder(new EmptyBorder(10,60,10,10));
+        panelInformation.add(labelTime, BorderLayout.LINE_START);
 
+        progressBar = new JProgressBar(0, 20);
+        UIManager.put("ProgressBar.foreground", Color.WHITE);
         labelAnsA.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -371,9 +380,12 @@ public class ClientGUI implements Runnable{
         panelAnsB.setImage(ImageIO.read(new File("resource/background_answer_right.png")));
         panelAnsC.setImage(ImageIO.read(new File("resource/background_answer.png")));
         panelAnsD.setImage(ImageIO.read(new File("resource/background_answer_right.png")));
+        labelTime.setText("--");
     }
 
     private void correctAnswer(String trueAns) throws IOException {
+        panelInformation.remove(progressBar);
+        panelInformation.add(labelAnnounce, BorderLayout.PAGE_END);
         switch (trueAns) {
             case "A":
                 panelAnsA.setImage(ImageIO.read(new File("resource/background_answer_correct.png")));
@@ -411,6 +423,8 @@ public class ClientGUI implements Runnable{
         }
         else if (type == ActionType.STGM) {
             textArea.setText("Activities:\n" + "Game has started.\n");
+            labelAnnounce.setForeground(Color.white);
+            labelAnnounce.setText("Waiting for host...");
             cardLayout.next(cards);
         }
         else if (type == ActionType.QUES) {
@@ -435,7 +449,11 @@ public class ClientGUI implements Runnable{
         }
         else if (type == ActionType.ALAN) {
             isNotChooseAnswer = true;
-            labelAnnounce.setText(s);
+            panelInformation.remove(labelAnnounce);
+            panelInformation.add(progressBar, BorderLayout.PAGE_END);
+            progressBar.setMinimum(0);
+            progressBar.setMaximum(20);
+            progressBar.setValue(20);
             textArea.append(s + "\n");
             textArea.setCaretPosition(textArea.getDocument().getLength());
         }
@@ -456,6 +474,21 @@ public class ClientGUI implements Runnable{
             labelAnnounce.setForeground(type == ActionType.FINI ? Color.GREEN : Color.red);
             textArea.append(s + "\n");
             textArea.setCaretPosition(textArea.getDocument().getLength());
+        }
+        else if (type == ActionType.TIME) {
+            labelTime.setText(s);
+//            labelAnnounce.setText("You have " + s + " second" + (Integer.parseInt(s) > 1 ? "s" : "") + " left!");
+            progressBar.setValue(Integer.parseInt(s));
+        }
+        else if (type == ActionType.TIOU) {
+            isNotChooseAnswer = false;
+            labelTime.setText("--");
+            labelAnnounce.setText(s);
+            panelInformation.remove(progressBar);
+            panelInformation.add(labelAnnounce, BorderLayout.PAGE_END);
+        }
+        else if (type == ActionType.BACK) {
+            cardLayout.previous(cards);
         }
     }
 

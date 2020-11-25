@@ -19,11 +19,14 @@ public enum ActionType {
     QUES("QUES"),
     TANS("TANS"),// True answer
     ALAN("ALAN"), // Allow client to answer, it's client turn.
+    TIME("TIME"), // countdown time
+    TIOU("TIOU"), // timeout
     CLAN("CLAN"), // Client answered
     NXQT("NXQT"), // Next question
     LOST("LOST"), // Client is lost, wrong answer.
     CORR("CORR"), // Announce for client that answer is correct.
-    FINI("FINI"); // Game is finished
+    FINI("FINI"), // Game is finished
+    BACK("BACK"); // back to lobby
 
     private String type;
 
