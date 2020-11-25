@@ -110,7 +110,7 @@ public class ClientMain implements Runnable {
         if (type == ActionType.NAME) {
             frontend.frame.setTitle("Millionaire - Client | Name: " + s + " | ID: " + clientId);
         }
-        else if (type == ActionType.CLAN) {
+        else if (type == ActionType.CLAN || type == ActionType.SKIP) {
             timer.cancel();
         }
         if (out != null) {

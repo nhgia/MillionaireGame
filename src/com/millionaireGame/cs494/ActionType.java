@@ -17,7 +17,8 @@ public enum ActionType {
     ANSC("ANSC"),
     ANSD("ANSD"),
     QUES("QUES"),
-    TANS("TANS"),// True answer
+    TANS("TANS"), // True answer
+    SKIP("SKIP"), // Skip question
     ALAN("ALAN"), // Allow client to answer, it's client turn.
     TIME("TIME"), // countdown time
     TIOU("TIOU"), // timeout

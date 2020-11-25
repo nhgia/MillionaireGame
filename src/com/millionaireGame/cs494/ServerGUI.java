@@ -546,6 +546,9 @@ public class ServerGUI implements Runnable {
                         break;
                 }
                 break;
+            case SKIP:
+                buttonCheckAnswer.setEnabled(true);
+                break;
             case TIOU:
                 buttonCheckAnswer.setEnabled(true);
                 labelAnnounce.setText(mess);

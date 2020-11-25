@@ -46,6 +46,7 @@ public class ClientGUI implements Runnable{
     private JScrollPane scrollPane;
     private JLabel labelTime = new JLabel("--", SwingConstants.CENTER);
     private JProgressBar progressBar;
+    private JButton buttonSkip = new JButton("Skip this question");
 
     File font_file = new File("fonts/BebasNeue-Regular.ttf");
     Font font = Font.createFont(Font.TRUETYPE_FONT, font_file);
@@ -309,12 +310,18 @@ public class ClientGUI implements Runnable{
         scrollPane.getVerticalScrollBar().setOpaque(false);
         scrollPane.setBorder(new EmptyBorder(10,10,10,10));
         scrollPane.setPreferredSize(new Dimension(300,120));
-        panelInformation.add(scrollPane, BorderLayout.LINE_END);
-        labelTime.setFont(font.deriveFont(100f));
+        labelTime.setFont(font.deriveFont(110f));
         labelTime.setForeground(Color.white);
         labelTime.setBorder(new EmptyBorder(10,60,10,10));
+        labelTime.setPreferredSize(new Dimension(240, labelTime.getHeight()));
         panelInformation.add(labelTime, BorderLayout.LINE_START);
-
+        final JPanel panelSkip = new JPanel(new BorderLayout());
+        buttonSkip.setFont(font.deriveFont(32f));
+        panelSkip.setOpaque(false);
+        panelSkip.add(buttonSkip, BorderLayout.PAGE_END);
+//        panelSkip.setPreferredSize(new Dimension(120, panelSkip.getHeight()));
+        panelSkip.add(scrollPane, BorderLayout.CENTER);
+        panelInformation.add(panelSkip, BorderLayout.LINE_END);
         progressBar = new JProgressBar(0, 20);
         UIManager.put("ProgressBar.foreground", Color.WHITE);
         labelAnsA.addActionListener(new ActionListener() {
@@ -373,6 +380,14 @@ public class ClientGUI implements Runnable{
                 }
             }
         });
+        buttonSkip.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                actionSendMessage.mess(ActionType.SKIP, "");
+                labelAnnounce.setText("You have skipped this question");
+                buttonSkip.setEnabled(false);
+            }
+        });
     }
 
     private void resetAnswerChoose() throws IOException {
@@ -386,6 +401,8 @@ public class ClientGUI implements Runnable{
     private void correctAnswer(String trueAns) throws IOException {
         panelInformation.remove(progressBar);
         panelInformation.add(labelAnnounce, BorderLayout.PAGE_END);
+        buttonSkip.setEnabled(false);
+        buttonSkip.setVisible(false);
         switch (trueAns) {
             case "A":
                 panelAnsA.setImage(ImageIO.read(new File("resource/background_answer_correct.png")));
@@ -426,6 +443,8 @@ public class ClientGUI implements Runnable{
             labelAnnounce.setForeground(Color.white);
             labelAnnounce.setText("Waiting for host...");
             cardLayout.next(cards);
+            buttonSkip.setEnabled(false);
+            buttonSkip.setVisible(false);
         }
         else if (type == ActionType.QUES) {
             try {
@@ -456,6 +475,8 @@ public class ClientGUI implements Runnable{
             progressBar.setValue(20);
             textArea.append(s + "\n");
             textArea.setCaretPosition(textArea.getDocument().getLength());
+            buttonSkip.setEnabled(true);
+            buttonSkip.setVisible(true);
         }
         else if (type == ActionType.TANS) {
             try {
@@ -483,9 +504,11 @@ public class ClientGUI implements Runnable{
         else if (type == ActionType.TIOU) {
             isNotChooseAnswer = false;
             labelTime.setText("--");
-            labelAnnounce.setText(s);
+            labelAnnounce.setText("");
             panelInformation.remove(progressBar);
             panelInformation.add(labelAnnounce, BorderLayout.PAGE_END);
+            textArea.append(s + "\n");
+            textArea.setCaretPosition(textArea.getDocument().getLength());
         }
         else if (type == ActionType.BACK) {
             cardLayout.previous(cards);

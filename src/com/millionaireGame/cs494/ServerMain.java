@@ -249,6 +249,8 @@ public class ServerMain implements Runnable {
                 playersRemaining--;
                 frontend.display(type, "Client " + clients.get(currentClientIndex).getName() + " did not answer!");
                 break;
+            case SKIP:
+                actionSendMessageToClients(ActionType.SKIP, clients.get(currentClientIndex).getName() + " skip the question.");
             default:
                 frontend.display(type, message);
         }
