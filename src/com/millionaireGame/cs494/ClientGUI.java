@@ -47,6 +47,7 @@ public class ClientGUI implements Runnable{
     private JLabel labelTime = new JLabel("--", SwingConstants.CENTER);
     private JProgressBar progressBar;
     private JButton buttonSkip = new JButton("Skip this question");
+    private static boolean isSkipped = false;
 
     File font_file = new File("fonts/BebasNeue-Regular.ttf");
     Font font = Font.createFont(Font.TRUETYPE_FONT, font_file);
@@ -386,6 +387,7 @@ public class ClientGUI implements Runnable{
                 actionSendMessage.mess(ActionType.SKIP, "");
                 labelAnnounce.setText("You have skipped this question");
                 buttonSkip.setEnabled(false);
+                isSkipped = true;
             }
         });
     }
@@ -445,6 +447,7 @@ public class ClientGUI implements Runnable{
             cardLayout.next(cards);
             buttonSkip.setEnabled(false);
             buttonSkip.setVisible(false);
+            isSkipped = false;
         }
         else if (type == ActionType.QUES) {
             try {
@@ -475,8 +478,14 @@ public class ClientGUI implements Runnable{
             progressBar.setValue(20);
             textArea.append(s + "\n");
             textArea.setCaretPosition(textArea.getDocument().getLength());
-            buttonSkip.setEnabled(true);
-            buttonSkip.setVisible(true);
+            if (!isSkipped) {
+                buttonSkip.setEnabled(true);
+                buttonSkip.setVisible(true);
+            }
+            else {
+                buttonSkip.setEnabled(false);
+                buttonSkip.setVisible(false);
+            }
         }
         else if (type == ActionType.TANS) {
             try {
@@ -509,6 +518,8 @@ public class ClientGUI implements Runnable{
             panelInformation.add(labelAnnounce, BorderLayout.PAGE_END);
             textArea.append(s + "\n");
             textArea.setCaretPosition(textArea.getDocument().getLength());
+            buttonSkip.setEnabled(false);
+            buttonSkip.setVisible(false);
         }
         else if (type == ActionType.BACK) {
             cardLayout.previous(cards);
