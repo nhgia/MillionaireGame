@@ -73,3 +73,9 @@ In this method, you can watch the system output in order if it has any errors. W
 - Cardview
 - LayoutInflater
 - database
+
+### Screenshots
+![image](https://user-images.githubusercontent.com/40845574/100724686-badd4700-33f5-11eb-8635-cf4d7e831d86.png)
+![image](https://user-images.githubusercontent.com/40845574/100724717-c4ff4580-33f5-11eb-90dd-15bb79026043.png)
+![image](https://user-images.githubusercontent.com/40845574/100724770-d47e8e80-33f5-11eb-8ab8-8ee68dba7fff.png)
+![image](https://user-images.githubusercontent.com/40845574/100724826-e3654100-33f5-11eb-83f1-abbc49bd89e3.png)
