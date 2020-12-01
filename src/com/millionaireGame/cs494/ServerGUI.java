@@ -10,8 +10,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 interface MessageToSend {
     void mess(ActionType type, String s);
@@ -59,8 +59,8 @@ public class ServerGUI implements Runnable {
     private JScrollPane scrollPanePlayersPlaying;
     private JList playersPlaying;
 
-    File font_file = new File("fonts/BebasNeue-Regular.ttf");
-    Font font = Font.createFont(Font.TRUETYPE_FONT, font_file);
+    InputStream brFont = getClass().getResourceAsStream("fonts/BebasNeue-Regular.ttf");
+    Font font;
 
     public MessageToSend actionSendMessage;
 
@@ -72,6 +72,7 @@ public class ServerGUI implements Runnable {
     private String trueAnswer = "";
 
     public ServerGUI(MessageToSend closure) throws IOException, FontFormatException {
+        font = Font.createFont(Font.TRUETYPE_FONT, brFont);
         this.actionSendMessage = closure;
         setupView();
     }
@@ -79,7 +80,7 @@ public class ServerGUI implements Runnable {
     private void setupView() throws IOException {
         cardLayout = new CardLayout();
         cards = new JPanel(cardLayout);
-        BufferedImage myImage = ImageIO.read(new File("resource/background_setup.png"));
+        BufferedImage myImage = ImageIO.read(getClass().getResourceAsStream("resource/background_setup.png"));
         panelMain = new ImagePanel(myImage);
         panelMain.setLayout(new BorderLayout());
         frame.setContentPane(cards);
@@ -223,11 +224,11 @@ public class ServerGUI implements Runnable {
     }
 
     private void setupPanelPlay() throws IOException {
-        BufferedImage myImage = ImageIO.read(new File("resource/background_play.png"));
+        BufferedImage myImage = ImageIO.read(getClass().getResourceAsStream("resource/background_play.png"));
         panelPlay = new ImagePanel(myImage);
         panelQuestionAnswers = new JPanel(new GridBagLayout());
         panelQuestionAnswers.setOpaque(false);
-        panelQuestion = new ImagePanel(ImageIO.read(new File("resource/background_question.png")));
+        panelQuestion = new ImagePanel(ImageIO.read(getClass().getResourceAsStream("resource/background_question.png")));
         panelQuestion.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -239,7 +240,7 @@ public class ServerGUI implements Runnable {
         gbc.weighty = 96;
         gbc.insets = new Insets(0,0,0,0);
         panelQuestionAnswers.add(panelQuestion, gbc);
-        panelAnsA = new ImagePanel(ImageIO.read(new File("resource/background_answer.png")));
+        panelAnsA = new ImagePanel(ImageIO.read(getClass().getResourceAsStream("resource/background_answer.png")));
         panelAnsA.setOpaque(false);
         gbc.gridy = 96;
         gbc.gridx = 0;
@@ -250,7 +251,7 @@ public class ServerGUI implements Runnable {
         gbc.anchor = GridBagConstraints.EAST;
         gbc.insets = new Insets(0,0,0,0);
         panelQuestionAnswers.add(panelAnsA, gbc);
-        panelAnsB = new ImagePanel(ImageIO.read(new File("resource/background_answer_right.png")));
+        panelAnsB = new ImagePanel(ImageIO.read(getClass().getResourceAsStream("resource/background_answer_right.png")));
         panelAnsB.setOpaque(false);
         gbc.gridy = 96;
         gbc.gridx = 480;
@@ -261,7 +262,7 @@ public class ServerGUI implements Runnable {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0,0,0,0);
         panelQuestionAnswers.add(panelAnsB, gbc);
-        panelAnsC = new ImagePanel(ImageIO.read(new File("resource/background_answer.png")));
+        panelAnsC = new ImagePanel(ImageIO.read(getClass().getResourceAsStream("resource/background_answer.png")));
         panelAnsC.setOpaque(false);
         gbc.gridy = 153;
         gbc.gridx = 0;
@@ -272,7 +273,7 @@ public class ServerGUI implements Runnable {
         gbc.anchor = GridBagConstraints.EAST;
         gbc.insets = new Insets(0,0,0,0);
         panelQuestionAnswers.add(panelAnsC, gbc);
-        panelAnsD = new ImagePanel(ImageIO.read(new File("resource/background_answer_right.png")));
+        panelAnsD = new ImagePanel(ImageIO.read(getClass().getResourceAsStream("resource/background_answer_right.png")));
         panelAnsD.setOpaque(false);
         gbc.gridy = 153;
         gbc.gridx = 480;
@@ -413,7 +414,7 @@ public class ServerGUI implements Runnable {
                 switch (trueAnswer) {
                     case "A":
                         try {
-                            panelAnsA.setImage(ImageIO.read(new File("resource/background_answer_correct.png")));
+                            panelAnsA.setImage(ImageIO.read(getClass().getResourceAsStream("resource/background_answer_correct.png")));
                             buttonNext.setEnabled(true);
                             buttonCheckAnswer.setEnabled(false);
                         } catch (IOException ioException) {
@@ -422,7 +423,7 @@ public class ServerGUI implements Runnable {
                         break;
                     case "B":
                         try {
-                            panelAnsB.setImage(ImageIO.read(new File("resource/background_answer_right_correct.png")));
+                            panelAnsB.setImage(ImageIO.read(getClass().getResourceAsStream("resource/background_answer_right_correct.png")));
                             buttonNext.setEnabled(true);
                             buttonCheckAnswer.setEnabled(false);
                         } catch (IOException ioException) {
@@ -431,7 +432,7 @@ public class ServerGUI implements Runnable {
                         break;
                     case "C":
                         try {
-                            panelAnsC.setImage(ImageIO.read(new File("resource/background_answer_correct.png")));
+                            panelAnsC.setImage(ImageIO.read(getClass().getResourceAsStream("resource/background_answer_correct.png")));
                             buttonNext.setEnabled(true);
                             buttonCheckAnswer.setEnabled(false);
                         } catch (IOException ioException) {
@@ -440,7 +441,7 @@ public class ServerGUI implements Runnable {
                         break;
                     case "D":
                         try {
-                            panelAnsD.setImage(ImageIO.read(new File("resource/background_answer_right_correct.png")));
+                            panelAnsD.setImage(ImageIO.read(getClass().getResourceAsStream("resource/background_answer_right_correct.png")));
                             buttonNext.setEnabled(true);
                             buttonCheckAnswer.setEnabled(false);
                         } catch (IOException ioException) {
@@ -462,10 +463,10 @@ public class ServerGUI implements Runnable {
     }
 
     private void resetAnswerChoose() throws IOException {
-        panelAnsA.setImage(ImageIO.read(new File("resource/background_answer.png")));
-        panelAnsB.setImage(ImageIO.read(new File("resource/background_answer_right.png")));
-        panelAnsC.setImage(ImageIO.read(new File("resource/background_answer.png")));
-        panelAnsD.setImage(ImageIO.read(new File("resource/background_answer_right.png")));
+        panelAnsA.setImage(ImageIO.read(getClass().getResourceAsStream("resource/background_answer.png")));
+        panelAnsB.setImage(ImageIO.read(getClass().getResourceAsStream("resource/background_answer_right.png")));
+        panelAnsC.setImage(ImageIO.read(getClass().getResourceAsStream("resource/background_answer.png")));
+        panelAnsD.setImage(ImageIO.read(getClass().getResourceAsStream("resource/background_answer_right.png")));
     }
 
     public void display(final ActionType type,final String mess) {
@@ -518,28 +519,28 @@ public class ServerGUI implements Runnable {
                 switch (mess) {
                     case "A":
                         try {
-                            panelAnsA.setImage(ImageIO.read(new File("resource/background_answer_chosen.png")));
+                            panelAnsA.setImage(ImageIO.read(getClass().getResourceAsStream("resource/background_answer_chosen.png")));
                         } catch (IOException ioException) {
                             ioException.printStackTrace();
                         }
                         break;
                     case "B":
                         try {
-                            panelAnsB.setImage(ImageIO.read(new File("resource/background_answer_right_chosen.png")));
+                            panelAnsB.setImage(ImageIO.read(getClass().getResourceAsStream("resource/background_answer_right_chosen.png")));
                         } catch (IOException ioException) {
                             ioException.printStackTrace();
                         }
                         break;
                     case "C":
                         try {
-                            panelAnsC.setImage(ImageIO.read(new File("resource/background_answer_chosen.png")));
+                            panelAnsC.setImage(ImageIO.read(getClass().getResourceAsStream("resource/background_answer_chosen.png")));
                         } catch (IOException ioException) {
                             ioException.printStackTrace();
                         }
                         break;
                     case "D":
                         try {
-                            panelAnsD.setImage(ImageIO.read(new File("resource/background_answer_right_chosen.png")));
+                            panelAnsD.setImage(ImageIO.read(getClass().getResourceAsStream("resource/background_answer_right_chosen.png")));
                         } catch (IOException ioException) {
                             ioException.printStackTrace();
                         }

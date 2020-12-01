@@ -3,13 +3,13 @@ package com.millionaireGame.cs494;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.swing.*;
 import java.awt.*;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
@@ -23,12 +23,13 @@ public class ServerMain implements Runnable {
     private Thread frontendThread;
     public MessageToSend actionSendMessage;
 
-    private ExecutorService pool = Executors.newFixedThreadPool(4);
+    private ExecutorService pool = Executors.newFixedThreadPool(10);
     private ArrayList<ClientController> clients = new ArrayList<>();
 
     public static int numberOfClients = 0;
 
-    private String dataJSON = new String((Files.readAllBytes(Paths.get("resource/data.json"))));
+    InputStream isJson = getClass().getResourceAsStream("resource/data.json");
+    private String dataJSON;
     private JSONArray questions;
     private JSONArray questionSet;
     private int currentQuestionIndex = -1;
@@ -38,6 +39,13 @@ public class ServerMain implements Runnable {
 
     public ServerMain() throws IOException, FontFormatException {
         actionSendMessage = this::actionSendMessageToClients;
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = isJson.read(buffer)) != -1) {
+            result.write(buffer, 0, length);
+        }
+        dataJSON =  result.toString(StandardCharsets.UTF_8.name());
         frontend = new ServerGUI(actionSendMessage);
         frontendThread = new Thread(frontend);
         thread = new Thread(this, "Awaiting");

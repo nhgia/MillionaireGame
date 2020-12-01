@@ -1,6 +1,12 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="MillionaireGame_Client:jar">
+  <artifact type="jar" build-on-make="true" name="MillionaireGame_Client:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/MillionaireGame_Client_jar</output-path>
+    <properties id="ant-postprocessing">
+      <options enabled="true" />
+    </properties>
+    <properties id="ant-preprocessing">
+      <options enabled="true" />
+    </properties>
     <root id="archive" name="MillionaireGame.jar">
       <element id="directory" name="META-INF">
         <element id="file-copy" path="$PROJECT_DIR$/src/meta/client/META-INF/MANIFEST.MF" />
