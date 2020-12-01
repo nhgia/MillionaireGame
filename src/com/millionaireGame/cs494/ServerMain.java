@@ -31,7 +31,7 @@ public class ServerMain implements Runnable {
     InputStream isJson = getClass().getResourceAsStream("resource/data.json");
     private String dataJSON;
     private JSONArray questions;
-    private JSONArray questionSet;
+    private static JSONArray questionSet;
     private int currentQuestionIndex = -1;
     private int numberOfConnectedClient = 0;
     private int currentClientIndex = 0;
@@ -80,13 +80,18 @@ public class ServerMain implements Runnable {
             frontend.display(ActionType.CONN,SERVER_IP + ":" + PORT);
             while (true) {
                 Socket socket = ss.accept();
-                numberOfClients++;
-                frontend.display(ActionType.CLCN, "Client ID " + numberOfClients + " - Connected");
-                ClientController clientThread = new ClientController(socket, this);
-                clients.add(clientThread);
-                pool.execute(clientThread);
-                clientThread.setConnectStatus(true);
-                clientThread.actionSendToClient(ActionType.CLID, String.valueOf(numberOfClients));
+                if (numberOfClients <= 10) {
+                    numberOfClients++;
+                    frontend.display(ActionType.CLCN, "Client ID " + numberOfClients + " - Connected");
+                    ClientController clientThread = new ClientController(socket, this);
+                    clients.add(clientThread);
+                    pool.execute(clientThread);
+                    clientThread.setConnectStatus(true);
+                    clientThread.actionSendToClient(ActionType.CLID, String.valueOf(numberOfClients));
+                }
+                else {
+                    socket.close();
+                }
             }
         } catch (Exception e) {
             frontend.display(ActionType.ERRO, e.getMessage());
@@ -105,6 +110,8 @@ public class ServerMain implements Runnable {
         switch (type) {
             case STGM:
                 numberOfConnectedClient = 0;
+                currentQuestionIndex = -1;
+                currentClientIndex = 0;
                 frontend.playersPlayingModel.removeAllElements();
                 for (ClientController client: clients) {
                     client.setLost(false);
@@ -265,14 +272,8 @@ public class ServerMain implements Runnable {
 
     }
     public JSONArray getRandomQuestionSet(JSONArray originArray, int totalQuestion){
-//        ArrayList<JSONObject> a = new ArrayList<>();
         Random rand = new Random();
-        List<Object> setQuestion = new ArrayList<>();
-//        for(int i = 0; i < totalQuestion; i++){
-//            int randomIndex = rand.nextInt((originArray.length()));
-//            setQuestion.add((JSONObject) originArray.get(randomIndex));
-//            originArray.remove(randomIndex);
-//        }
+        List<Object> setQuestion;
         setQuestion = originArray.toList();
         Collections.shuffle(setQuestion);
         return new JSONArray(setQuestion.subList(0, totalQuestion));

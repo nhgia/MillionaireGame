@@ -22,6 +22,8 @@ public class ClientMain implements Runnable {
 
     public static Timer timer;
 
+    private static boolean isGameStarted = false;
+
     public ClientMain() throws IOException, FontFormatException, ParseException {
 //        display(SERVER_IP + " on port " + PORT);
         thread = new Thread(this, "Trying");
@@ -84,6 +86,7 @@ public class ClientMain implements Runnable {
             case CONN:
                 break;
             case STGM:
+                isGameStarted = true;
             case QUES:
             case ANSA:
             case ANSB:
@@ -94,7 +97,9 @@ public class ClientMain implements Runnable {
             case CORR:
             case FINI:
             case BACK:
-                frontend.display(type, message);
+                if (isGameStarted) {
+                    frontend.display(type, message);
+                }
                 break;
             case ALAN:
                 frontend.display(type, message);

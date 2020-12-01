@@ -332,6 +332,7 @@ public class ClientGUI implements Runnable{
                     try {
                         panelAnsA.setImage(ImageIO.read(getClass().getResourceAsStream("resource/background_answer_chosen.png")));
                         actionSendMessage.mess(ActionType.CLAN, "A");
+                        buttonSkip.setEnabled(false);
                     } catch (IOException ioException) {
                         ioException.printStackTrace();
                     }
@@ -346,6 +347,7 @@ public class ClientGUI implements Runnable{
                     try {
                         panelAnsB.setImage(ImageIO.read(getClass().getResourceAsStream("resource/background_answer_right_chosen.png")));
                         actionSendMessage.mess(ActionType.CLAN, "B");
+                        buttonSkip.setEnabled(false);
                     } catch (IOException ioException) {
                         ioException.printStackTrace();
                     }
@@ -360,6 +362,7 @@ public class ClientGUI implements Runnable{
                     try {
                         panelAnsC.setImage(ImageIO.read(getClass().getResourceAsStream("resource/background_answer_chosen.png")));
                         actionSendMessage.mess(ActionType.CLAN, "C");
+                        buttonSkip.setEnabled(false);
                     } catch (IOException ioException) {
                         ioException.printStackTrace();
                     }
@@ -374,6 +377,7 @@ public class ClientGUI implements Runnable{
                     try {
                         panelAnsD.setImage(ImageIO.read(getClass().getResourceAsStream("resource/background_answer_right_chosen.png")));
                         actionSendMessage.mess(ActionType.CLAN, "D");
+                        buttonSkip.setEnabled(false);
                     } catch (IOException ioException) {
                         ioException.printStackTrace();
                     }
